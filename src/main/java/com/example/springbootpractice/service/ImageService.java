@@ -33,7 +33,7 @@ public class ImageService {
   @Transactional(readOnly = true)
   public ImageInfo getImageInfo(Long id) {
     return imageInfoRepository.findById(id)
-        .orElse(null);
+        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND));
   }
 
   @Transactional

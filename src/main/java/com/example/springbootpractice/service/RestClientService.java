@@ -14,11 +14,11 @@ public class RestClientService {
 
   public Optional<ImageResultResponse> getImageResults() {
     return Optional.ofNullable(restClient.get()
-//        .uri(uriBuilder -> uriBuilder
-//            .queryParam("q", "Apple")
-//            .queryParam("engine", "google_images")
-//            .queryParam("ijn", "0")
-//            .build())
+        .uri(uriBuilder -> uriBuilder
+            .queryParam("q", "Apple")
+            .queryParam("engine", "google_images")
+            .queryParam("ijn", "0")
+            .build())
         .retrieve()
         .toEntity(ImageResultResponse.class)
         .getBody());

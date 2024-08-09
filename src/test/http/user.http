@@ -1,0 +1,41 @@
+### 회원 가입
+POST http://localhost:8080/api/v1/user/signup
+Content-Type: application/json
+
+{
+  "name": "한규호",
+  "email": "ghhan3@abc.com",
+  "password": "ghhan12345",
+  "role": "ROLE_ADMIN",
+  "gender": "MALE",
+  "type": "ADULT"
+}
+
+
+### JWT 토큰 발급
+POST http://localhost:8080/api/v1/user/login
+Content-Type: application/json
+
+{
+  "email": "ghhan3@abc.com",
+  "password": "ghhan12345"
+}
+
+> {%
+  client.global.set("token-type", "Bearer");
+  client.global.set("access-token", response.body.accessToken);
+%}
+
+
+
+### 최근 일주일 등록 사용자 중 성인작품 3개 이상 조회한 사용자 목록 조회 API (관리자용)
+GET http://localhost:8080/api/v1/user/adult-webtoon-view?page=0&size=6&direction=DESC
+Content-Type: application/json
+Authorization: {{token-type}} {{access-token}}
+
+
+
+### 회원 탈퇴 API
+DELETE http://localhost:8080/api/v1/user/me
+Content-Type: application/json
+Authorization: {{token-type}} {{access-token}}

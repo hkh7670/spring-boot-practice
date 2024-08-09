@@ -4,11 +4,11 @@ Content-Type: application/json
 
 {
   "name": "한규호",
-  "email": "ghhan3@abc.com",
+  "email": "ghhan4@abc.com",
   "password": "ghhan12345",
-  "role": "ROLE_ADMIN",
+  "role": "ROLE_USER",
   "gender": "MALE",
-  "type": "ADULT"
+  "type": "NORMAL"
 }
 
 
@@ -17,7 +17,7 @@ POST http://localhost:8080/api/v1/user/login
 Content-Type: application/json
 
 {
-  "email": "ghhan3@abc.com",
+  "email": "ghhan4@abc.com",
   "password": "ghhan12345"
 }
 

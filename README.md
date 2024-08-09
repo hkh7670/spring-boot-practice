@@ -332,4 +332,11 @@
         ]
       }
       ```
+  - 일반회원이 성인작품을 조회 또는 평가 시 에러처리 하였습니다.
+    ```json
+    {
+      "errorCode": "NOT_ALLOWED_USER_TYPE_FOR_WEBTOON",
+      "message": "해당 웹툰에 대한 접근 권한이 없습니다."
+    }
+    ```
   - Entity의 연관관계는 다대일 관계(ManyToOne)만을 사용하여 구현하였습니다.

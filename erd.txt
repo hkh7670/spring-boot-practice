@@ -1,0 +1,50 @@
+// https://dbdiagram.io
+
+table USER_INFO {
+  ADULT_WEBTOON_VIEW_COUNT bigint
+  REG_DATE timestamp
+  UPT_DATE timestamp
+  seq bigint [primary key]
+  EMAIL varchar
+  NAME varchar
+  PASSWORD varchar
+  GENDER enum ('FEMALE','MALE')
+  ROLE enum ('ROLE_ADMIN','ROLE_USER')
+  TYPE enum ('ADULT','NORMAL')
+  //constraint USER_INFO_EMAIL_UNIQUE unique (EMAIL)
+}
+
+table WEBTOON_EVALUATION_INFO {
+  REG_DATE timestamp
+  UPT_DATE timestamp
+  USER_SEQ bigint
+  WEBTOON_SEQ bigint
+  seq bigint [primary key]
+  COMMENT varchar
+  EVALUATION_TYPE enum ('DISLIKE','LIKE')
+  // constraint WEBTOON_EVALUATION_INFO_USER_SEQ_WEBTOON_SEQ_UNIQUE_KEY unique (USER_SEQ, WEBTOON_SEQ)
+}
+
+table WEBTOON_INFO {
+  COIN bigint
+  OPEN_DATE timestamp
+  REG_DATE timestamp
+  UPT_DATE timestamp
+  seq bigint [primary key]
+  NAME varchar
+  author varchar
+  RATING_TYPE enum ('ADULT','NORMAL')
+}
+
+table WEBTOON_VIEW_HISTORY_INFO {
+  REG_DATE timestamp
+  UPT_DATE timestamp
+  USER_SEQ bigint
+  WEBTOON_SEQ bigint
+  seq bigint [primary key]
+}
+
+Ref: WEBTOON_EVALUATION_INFO.WEBTOON_SEQ > WEBTOON_INFO.seq // many-to-one
+Ref: WEBTOON_EVALUATION_INFO.USER_SEQ > USER_INFO.seq // many-to-one
+Ref: WEBTOON_VIEW_HISTORY_INFO.USER_SEQ > USER_INFO.seq // many-to-one
+Ref: WEBTOON_VIEW_HISTORY_INFO.WEBTOON_SEQ > WEBTOON_INFO.seq // many-to-one

@@ -1,0 +1,10 @@
+### 영화 리스트 조회
+GET http://localhost:8080/api/v1/tmdb
+Authorization: {{token-type}} {{access-token}}
+Content-Type: application/json
+
+
+### 영화 리스트 조회 (외부)
+GET https://api.themoviedb.org/3/movie/popular?language=ko-KR&page=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NDY5NGRlYzVhYmE5NWZkNmE2OTY0MTVhZDAwOTE5ZiIsIm5iZiI6MTczNzY0MTg0MC45OSwic3ViIjoiNjc5MjRmNzA0MDViZDc4YjdmNDcwOTc3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ZZau206RaS9Uc1xj_j2cEDJQTZEHbhDL-yQYTT5YE3g
+Content-Type: application/json

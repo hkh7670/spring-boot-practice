@@ -20,12 +20,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       FilterChain chain) throws ServletException, IOException {
     try {
       // 헤더에서 JWT를 받아옴
-      String token = jwtTokenProvider.resolveToken(request);
-      if (existBearerToken(token)) {
-        String tokenValue = getTokenValue(token);
-        if (jwtTokenProvider.validateToken(tokenValue)) {
+      String authorizationHeaderValue = jwtTokenProvider.getAuthorizationHeaderValue(request);
+      if (isBearerToken(authorizationHeaderValue)) {
+        String token = getToken(authorizationHeaderValue);
+        if (jwtTokenProvider.isValidToken(token)) {
           // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옴
-          Authentication authentication = jwtTokenProvider.getAuthentication(tokenValue);
+          Authentication authentication = jwtTokenProvider.getAuthentication(token);
           // SecurityContext에 Authentication 객체를 저장
           SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -36,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   }
 
-  private boolean existBearerToken(String token) {
+  private boolean isBearerToken(String token) {
     return token != null && token.startsWith("Bearer ");
   }
 
-  private String getTokenValue(String token) {
+  private String getToken(String token) {
     return token.split(" ")[1];
   }
 

@@ -39,7 +39,7 @@ public class ApiCommonAdvice {
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorResponse exception(Exception e) {
+  public ErrorResponse handleException(Exception e) {
     return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
   }
 }

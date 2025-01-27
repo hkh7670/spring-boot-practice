@@ -33,6 +33,9 @@ public class TMDBRestClientConfig {
   @Value("${tmdb.api-key}")
   private String API_KEY;
 
+  private static final int CONNECTION_TIMEOUT = 5 * 1000;
+  private static final int READ_TIMEOUT = 25 * 1000;
+
   @Bean
   public TMDBRestClient tmdbRestClient() {
     return HttpServiceProxyFactory
@@ -50,16 +53,14 @@ public class TMDBRestClientConfig {
         })
         .requestFactory(getClientHttpRequestFactory())
         .defaultStatusHandler(HttpStatusCode::is4xxClientError, default4xxErrorHandler())
-        .defaultStatusHandler(HttpStatusCode::is5xxServerError, (req, res) -> {
-          throw new ApiErrorException(ErrorCode.EXTERNAL_SERVER_ERROR);
-        })
+        .defaultStatusHandler(HttpStatusCode::is5xxServerError, default5xxErrorHandler())
         .build();
   }
 
   private ClientHttpRequestFactory getClientHttpRequestFactory() {
     var factory = new SimpleClientHttpRequestFactory();
-    factory.setReadTimeout(25 * 1000);
-    factory.setConnectTimeout(5 * 1000);
+    factory.setConnectTimeout(CONNECTION_TIMEOUT);
+    factory.setReadTimeout(READ_TIMEOUT);
     return factory;
 
   }
@@ -70,10 +71,16 @@ public class TMDBRestClientConfig {
       log.debug(errorBody.toString());
       int statusCode = res.getStatusCode().value();
       switch (statusCode) {
-        case 401 -> throw new ApiErrorException(ErrorCode.UNAUTHORIZED);
+        case 401 -> throw new ApiErrorException(ErrorCode.AUTHENTICATION_FAIL);
         case 404 -> throw new ApiErrorException(ErrorCode.NOT_FOUND);
         default -> throw new ApiErrorException(ErrorCode.BAD_REQUEST);
       }
+    };
+  }
+
+  private ResponseSpec.ErrorHandler default5xxErrorHandler() {
+    return (req, res) -> {
+      throw new ApiErrorException(ErrorCode.EXTERNAL_SERVER_ERROR);
     };
   }
 

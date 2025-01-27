@@ -21,12 +21,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private static final String[] PERMIT_ALL_LIST = {
-      "/api/v1/user/signup", "/api/v1/user/login",
+  private final CustomAccessDeniedHandler accessDeniedHandler;
+  private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+  public static final String[] PERMIT_ALL_URI = {
       "/h2-console/**",
-      "/swagger.html", "/swagger-ui/**", "/api-docs/**"
+      "/swagger.html", "/swagger-ui/**",
+      "/api-docs", "/api-docs/**",
+      "/api/v1/user/signup", "/api/v1/user/login",
   };
-  private static final String[] ADMIN_API_LIST = {
+
+  private static final String[] ADMIN_API_URI = {
       "/api/v1/webtoon/*/coin", "api/v1/user/adult-webtoon-view/**"
   };
 
@@ -53,10 +58,13 @@ public class SecurityConfig {
             SessionCreationPolicy.STATELESS))  // 토큰 기반 인증이므로 세션 사용 안함
         .headers(headers -> headers.frameOptions(FrameOptionsConfig::disable))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(PERMIT_ALL_LIST).permitAll()
-            .requestMatchers(ADMIN_API_LIST)
-            .hasAuthority("ROLE_ADMIN")
+            .requestMatchers(PERMIT_ALL_URI).permitAll()
+            .requestMatchers(ADMIN_API_URI).hasAuthority("ROLE_ADMIN")
             .anyRequest().authenticated()
+        )
+        .exceptionHandling(exceptions -> exceptions
+            .accessDeniedHandler(accessDeniedHandler)
+            .authenticationEntryPoint(authenticationEntryPoint)
         )
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음
         .addFilterBefore(new JwtAuthenticationFilter(this.jwtTokenProvider),

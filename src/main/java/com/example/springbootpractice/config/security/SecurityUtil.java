@@ -14,10 +14,10 @@ public class SecurityUtil {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("authentication : {}", authentication);
     if (authentication == null) {
-      throw new ApiErrorException(ErrorCode.UNAUTHORIZED);
+      throw new ApiErrorException(ErrorCode.AUTHENTICATION_FAIL);
     }
     if (!authentication.isAuthenticated()) {
-      throw new ApiErrorException(ErrorCode.UNAUTHORIZED);
+      throw new ApiErrorException(ErrorCode.AUTHENTICATION_FAIL);
     }
     return authentication;
   }

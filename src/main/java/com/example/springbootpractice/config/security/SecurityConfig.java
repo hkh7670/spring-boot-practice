@@ -63,8 +63,8 @@ public class SecurityConfig {
             .anyRequest().authenticated()
         )
         .exceptionHandling(exceptions -> exceptions
-            .accessDeniedHandler(this.accessDeniedHandler)
-            .authenticationEntryPoint(this.authenticationEntryPoint)
+            .accessDeniedHandler(this.accessDeniedHandler) // 403 에러 처리
+            .authenticationEntryPoint(this.authenticationEntryPoint) // 401 에러 처리
         )
         // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음
         .addFilterBefore(new JwtAuthenticationFilter(this.jwtTokenProvider),

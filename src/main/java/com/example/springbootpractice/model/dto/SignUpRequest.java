@@ -15,7 +15,7 @@ public record SignUpRequest(
     @NotBlank
     @Pattern(
         regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])+[.][a-zA-Z]{2,3}$"
-        , message = "올바른 형식의 이메일 주소여야 합니다"
+        , message = "올바르지 않은 이메일 형식 입니다."
     )
     String email,
 
@@ -34,5 +34,15 @@ public record SignUpRequest(
 
 ) {
 
-
+  @Override
+  public String toString() {
+    return "SignUpRequest{" +
+        "name='" + name + '\'' +
+        ", email='" + email + '\'' +
+        ", password='" + password + '\'' +
+        ", role=" + role +
+        ", gender=" + gender +
+        ", type=" + type +
+        '}';
+  }
 }

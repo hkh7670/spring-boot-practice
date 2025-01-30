@@ -32,6 +32,7 @@ public class UserService {
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
 
+
   @Transactional(readOnly = true)
   public UserEntity getUser(String email) {
     return userRepository.findByEmail(email)
@@ -39,13 +40,13 @@ public class UserService {
   }
 
   @Transactional
-  public void createUser(SignUpRequest request) {
+  public long createUser(SignUpRequest request) {
     if (userRepository.existsByEmail(request.email())) {
       throw new ApiErrorException(ErrorCode.DUPLICATED_EMAIL);
     }
-    userRepository.save(
+    return userRepository.save(
         UserEntity.of(request, this.passwordEncoder.encode(request.password()))
-    );
+    ).getSeq();
   }
 
   @Transactional(readOnly = true)
@@ -75,7 +76,8 @@ public class UserService {
   }
 
   @Transactional(readOnly = true)
-  public Page<AdultWebtoonViewersResponse> getAdultWebtoonViewers(LocalDateTime from, LocalDateTime to, Pageable pageable) {
+  public Page<AdultWebtoonViewersResponse> getAdultWebtoonViewers(LocalDateTime from,
+      LocalDateTime to, Pageable pageable) {
     Page<UserEntity> page = userRepository.findAdultWebtoonViewers(from, to, pageable);
     return page.map(AdultWebtoonViewersResponse::from);
   }

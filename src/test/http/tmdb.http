@@ -1,4 +1,10 @@
 ### 영화 리스트 조회
-GET http://localhost:8080/api/v1/tmdb
+GET http://localhost:8080/api/v1/tmdb/movie/popular?page=1
+Authorization: {{token-type}} {{access-token}}
+Content-Type: application/json
+
+
+### 영화 리스트 등록
+POST http://localhost:8080/api/v1/tmdb/movie/popular
 Authorization: {{token-type}} {{access-token}}
 Content-Type: application/json

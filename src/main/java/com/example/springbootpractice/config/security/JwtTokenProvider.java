@@ -82,6 +82,10 @@ public class JwtTokenProvider {
     }
   }
 
+  public boolean isNotValidToken(String token) {
+    return !isValidToken(token);
+  }
+
   /**
    * JWT Claims 추출
    *
@@ -98,6 +102,18 @@ public class JwtTokenProvider {
     } catch (ExpiredJwtException e) {
       return e.getClaims();
     }
+  }
+
+  public boolean isBearerToken(String token) {
+    return token != null && token.startsWith("Bearer ");
+  }
+
+  public boolean isNotBearerToken(String token) {
+    return !isBearerToken(token);
+  }
+
+  public String getToken(String token) {
+    return token.split(" ")[1];
   }
 
 }

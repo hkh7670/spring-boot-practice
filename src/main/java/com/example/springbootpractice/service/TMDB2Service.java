@@ -15,22 +15,22 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @RequiredArgsConstructor
 public class TMDB2Service {
 
-  private final MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void insertPopularMovies2(PopularMoviePageResponse res) {
-    String transactionName = TransactionSynchronizationManager.getCurrentTransactionName();
-    boolean isActualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
-    log.info("START TRANSACTION: {}", transactionName);
-    log.info("isActualTransactionActive: {}", isActualTransactionActive);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void insertPopularMovies2(PopularMoviePageResponse res) {
+        String transactionName = TransactionSynchronizationManager.getCurrentTransactionName();
+        boolean isActualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
+        log.info("START TRANSACTION: {}", transactionName);
+        log.info("isActualTransactionActive: {}", isActualTransactionActive);
 
-    movieRepository.saveAll(
-        res.results().stream()
-            .map(item -> MovieEntity.of(item, 2))
-            .toList()
-    );
-//    throw new RuntimeException();
-  }
+        movieRepository.saveAll(
+            res.results().stream()
+                .map(item -> MovieEntity.of(item, 2))
+                .toList()
+        );
+    throw new RuntimeException();
+    }
 
 
 }

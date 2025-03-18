@@ -46,7 +46,7 @@ public class TMDBService {
 //    } catch (Exception e) {
 //      log.info(e.getMessage());
 //    }
-    throw new RuntimeException();
+//    throw new RuntimeException();
 
   }
 

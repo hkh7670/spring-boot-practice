@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
-    info = @io.swagger.v3.oas.annotations.info.Info(title = "kstd-lezhin-backend",
-        description = "kstd-lezhin Backend API 명세서",
+    info = @io.swagger.v3.oas.annotations.info.Info(title = "spring-boot-practice",
+        description = "Backend API 명세서",
         version = "v1"))
 @RequiredArgsConstructor
 @Configuration

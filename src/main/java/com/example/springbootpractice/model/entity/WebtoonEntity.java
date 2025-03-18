@@ -42,7 +42,7 @@ public class WebtoonEntity extends BaseTimeEntity {
   @Comment("금액")
   private Long coin;
 
-  @Column(name = "OPEN_DATE", nullable = false)
+  @Column(name = "OPEN_DATE", nullable = false, columnDefinition = "TIMESTAMP(6)")
   @Comment("서비스 제공일")
   private LocalDateTime openDate;
 

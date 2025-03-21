@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class ResponseHeaderFilter implements Filter {
@@ -21,7 +22,7 @@ public class ResponseHeaderFilter implements Filter {
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
     String requestId = MDC.get(REQUEST_ID_HEADER);
 
-    if (requestId != null) {
+    if (StringUtils.hasText(requestId)) {
       httpServletResponse.setHeader(REQUEST_ID_HEADER, requestId);
     }
 

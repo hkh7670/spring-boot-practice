@@ -5,7 +5,6 @@ import com.example.springbootpractice.exception.ApiErrorException;
 import com.example.springbootpractice.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,17 +21,25 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 public class TMDBRestClientConfig {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  @Value("${tmdb.api-read-access-token}")
-  private String API_READ_ACCESS_TOKEN;
+  private final String API_READ_ACCESS_TOKEN;
 
-  @Value("${tmdb.api-key}")
-  private String API_KEY;
+  private final String API_KEY;
 
+  public TMDBRestClientConfig(
+      @Value("${tmdb.api-read-access-token}")
+      String API_READ_ACCESS_TOKEN,
+      @Value("${tmdb.api-key}")
+      String API_KEY
+  ) {
+    this.API_READ_ACCESS_TOKEN = API_READ_ACCESS_TOKEN;
+    this.API_KEY = API_KEY;
+  }
+
+  private static final String BASE_URL = "https://api.themoviedb.org/3";
   private static final int CONNECTION_TIMEOUT = 5 * 1000;
   private static final int READ_TIMEOUT = 25 * 1000;
 
@@ -46,9 +53,9 @@ public class TMDBRestClientConfig {
 
   private RestClient getTMDBRestClient() {
     return RestClient.builder()
-        .baseUrl("https://api.themoviedb.org/3")
+        .baseUrl(BASE_URL)
         .defaultHeaders(httpHeaders -> {
-          httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + API_READ_ACCESS_TOKEN);
+          httpHeaders.add(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue());
           httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         })
         .requestFactory(getClientHttpRequestFactory())
@@ -57,12 +64,15 @@ public class TMDBRestClientConfig {
         .build();
   }
 
+  private String getAuthorizationHeaderValue() {
+    return "Bearer " + this.API_READ_ACCESS_TOKEN;
+  }
+
   private ClientHttpRequestFactory getClientHttpRequestFactory() {
     var factory = new SimpleClientHttpRequestFactory();
     factory.setConnectTimeout(CONNECTION_TIMEOUT);
     factory.setReadTimeout(READ_TIMEOUT);
     return factory;
-
   }
 
   private ResponseSpec.ErrorHandler default4xxErrorHandler() {

@@ -23,10 +23,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class TMDBRestClientConfig {
 
-  private static final ObjectMapper objectMapper = new ObjectMapper();
-
   private final String API_READ_ACCESS_TOKEN;
-
   private final String API_KEY;
 
   public TMDBRestClientConfig(
@@ -39,6 +36,7 @@ public class TMDBRestClientConfig {
     this.API_KEY = API_KEY;
   }
 
+  private static final ObjectMapper objectMapper = new ObjectMapper();
   private static final String BASE_URL = "https://api.themoviedb.org/3";
   private static final int CONNECTION_TIMEOUT = 5 * 1000;
   private static final int READ_TIMEOUT = 25 * 1000;

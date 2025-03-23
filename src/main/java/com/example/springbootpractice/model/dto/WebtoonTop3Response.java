@@ -26,8 +26,10 @@ public record WebtoonTop3Response(
 
   }
 
-  public static WebtoonTop3Response of(List<WebtoonTop3Info> likeTop3Info,
-      List<WebtoonTop3Info> dislikeTop3Info) {
+  public static WebtoonTop3Response of(
+      List<WebtoonTop3Info> likeTop3Info,
+      List<WebtoonTop3Info> dislikeTop3Info
+  ) {
     return WebtoonTop3Response.builder()
         .likeTop3List(likeTop3Info.stream()
             .map(item -> WebtoonCountInfoResponse.builder()

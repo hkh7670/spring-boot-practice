@@ -6,6 +6,7 @@ import com.example.springbootpractice.exception.ErrorCode;
 import com.example.springbootpractice.model.dto.UpdateWebtoonCoinRequest;
 import com.example.springbootpractice.model.dto.WebtoonEvaluationRequest;
 import com.example.springbootpractice.model.dto.WebtoonResponse;
+import com.example.springbootpractice.model.dto.WebtoonTop3Info;
 import com.example.springbootpractice.model.dto.WebtoonTop3Response;
 import com.example.springbootpractice.model.dto.WebtoonViewHistoryResponse;
 import com.example.springbootpractice.model.entity.UserEntity;
@@ -18,6 +19,7 @@ import com.example.springbootpractice.model.enums.WebtoonRatingType;
 import com.example.springbootpractice.repository.WebtoonEvaluationRepository;
 import com.example.springbootpractice.repository.WebtoonRepository;
 import com.example.springbootpractice.repository.WebtoonViewHistoryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -60,9 +62,17 @@ public class WebtoonService {
   @Transactional(readOnly = true)
   public WebtoonTop3Response getTop3Webtoons() {
     return WebtoonTop3Response.of(
-        webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.LIKE),
-        webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.DISLIKE)
+        getLikeTop3Webtoons(),
+        getDislikeTop3Webtoons()
     );
+  }
+
+  private List<WebtoonTop3Info> getLikeTop3Webtoons() {
+    return webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.LIKE);
+  }
+
+  private List<WebtoonTop3Info> getDislikeTop3Webtoons() {
+    return webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.DISLIKE);
   }
 
   @Transactional

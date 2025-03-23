@@ -76,8 +76,11 @@ public class UserService {
   }
 
   @Transactional(readOnly = true)
-  public Page<AdultWebtoonViewersResponse> getAdultWebtoonViewers(LocalDateTime from,
-      LocalDateTime to, Pageable pageable) {
+  public Page<AdultWebtoonViewersResponse> getAdultWebtoonViewers(
+      LocalDateTime from,
+      LocalDateTime to,
+      Pageable pageable
+  ) {
     Page<UserEntity> page = userRepository.findAdultWebtoonViewers(from, to, pageable);
     return page.map(AdultWebtoonViewersResponse::from);
   }

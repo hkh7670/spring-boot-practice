@@ -12,11 +12,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebtoonComment {
 
-  String message() default "웹툰 평가 코멘트는 특수문자를 허용하지 않습니다.";
+    String message() default "웹툰 평가 코멘트는 특수문자를 허용하지 않습니다.";
 
-  boolean nullable() default true;
+    boolean nullable() default true;
 
-  Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-  Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

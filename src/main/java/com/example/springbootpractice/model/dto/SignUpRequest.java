@@ -34,15 +34,15 @@ public record SignUpRequest(
 
 ) {
 
-  @Override
-  public String toString() {
-    return "SignUpRequest{" +
-        "name='" + name + '\'' +
-        ", email='" + email + '\'' +
-        ", password='" + password + '\'' +
-        ", role=" + role +
-        ", gender=" + gender +
-        ", type=" + type +
-        '}';
-  }
+    @Override
+    public String toString() {
+        return "SignUpRequest{" +
+            "name='" + name + '\'' +
+            ", email='" + email + '\'' +
+            ", password='" + password + '\'' +
+            ", role=" + role +
+            ", gender=" + gender +
+            ", type=" + type +
+            '}';
+    }
 }

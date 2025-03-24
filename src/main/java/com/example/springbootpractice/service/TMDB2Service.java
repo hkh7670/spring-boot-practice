@@ -29,7 +29,7 @@ public class TMDB2Service {
                 .map(item -> MovieEntity.of(item, 2))
                 .toList()
         );
-    throw new RuntimeException();
+        throw new RuntimeException();
     }
 
 

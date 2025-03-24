@@ -17,15 +17,15 @@ public record WebtoonResponse(
 
 ) {
 
-  public static WebtoonResponse from(WebtoonEntity entity) {
-    return WebtoonResponse.builder()
-        .seq(entity.getSeq())
-        .name(entity.getName())
-        .author(entity.getAuthor())
-        .coin(entity.getCoin())
-        .openDate(entity.getOpenDate())
-        .ratingType(entity.getRatingType())
-        .build();
-  }
+    public static WebtoonResponse from(WebtoonEntity entity) {
+        return WebtoonResponse.builder()
+            .seq(entity.getSeq())
+            .name(entity.getName())
+            .author(entity.getAuthor())
+            .coin(entity.getCoin())
+            .openDate(entity.getOpenDate())
+            .ratingType(entity.getRatingType())
+            .build();
+    }
 
 }

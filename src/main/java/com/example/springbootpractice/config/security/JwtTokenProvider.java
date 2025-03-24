@@ -21,99 +21,100 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-  private final SecretKey key;
-  private final long accessTokenExpTime;
-  private final UserDetailsService userDetailsService;
+    private final SecretKey key;
+    private final long accessTokenExpTime;
+    private final UserDetailsService userDetailsService;
 
-  public JwtTokenProvider(
-      @Value("${jwt.secret}") String secretKey,
-      @Value("${jwt.expiration_time}") long accessTokenExpTime,
-      UserDetailsService userDetailsService
-  ) {
-    byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-    this.key = Keys.hmacShaKeyFor(keyBytes);
-    this.accessTokenExpTime = accessTokenExpTime;
-    this.userDetailsService = userDetailsService;
-  }
-
-
-  // JWT 토큰 생성
-  public String createToken(String email, Role role) {
-    Date now = new Date();
-    return Jwts.builder()
-        .claims()
-        .add("email", email)
-        .add("role", role)
-        .and()
-        .issuedAt(now)
-        .expiration(new Date(now.getTime() + this.accessTokenExpTime)) // set Expire Time
-        .signWith(this.key)
-        .compact();
-  }
-
-  // JWT 토큰에서 인증 정보 조회
-  public Authentication getAuthentication(String token) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
-    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-  }
-
-  // 토큰에서 회원 정보 추출
-  public String getUserEmail(String token) {
-    return Jwts.parser()
-        .verifyWith(this.key)
-        .build()
-        .parseSignedClaims(token)
-        .getPayload()
-        .get("email", String.class);
-  }
-
-  // Request의 Header에서 token 값을 가져옵니다.
-  public String getAuthorizationHeaderValue(HttpServletRequest request) {
-    return request.getHeader("Authorization");
-  }
-
-  // 토큰의 유효성 + 만료일자 확인
-  public boolean isValidToken(String token) {
-    try {
-      Claims claims = parseClaims(token);
-      return !claims.getExpiration().before(new Date());
-    } catch (Exception e) {
-      return false;
+    public JwtTokenProvider(
+        @Value("${jwt.secret}") String secretKey,
+        @Value("${jwt.expiration_time}") long accessTokenExpTime,
+        UserDetailsService userDetailsService
+    ) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.accessTokenExpTime = accessTokenExpTime;
+        this.userDetailsService = userDetailsService;
     }
-  }
 
-  public boolean isNotValidToken(String token) {
-    return !isValidToken(token);
-  }
 
-  /**
-   * JWT Claims 추출
-   *
-   * @param token
-   * @return JWT Claims
-   */
-  public Claims parseClaims(String token) {
-    try {
-      return Jwts.parser()
-          .verifyWith(this.key)
-          .build()
-          .parseSignedClaims(token)
-          .getPayload();
-    } catch (ExpiredJwtException e) {
-      return e.getClaims();
+    // JWT 토큰 생성
+    public String createToken(String email, Role role) {
+        Date now = new Date();
+        return Jwts.builder()
+            .claims()
+            .add("email", email)
+            .add("role", role)
+            .and()
+            .issuedAt(now)
+            .expiration(new Date(now.getTime() + this.accessTokenExpTime)) // set Expire Time
+            .signWith(this.key)
+            .compact();
     }
-  }
 
-  public boolean isBearerToken(String token) {
-    return token != null && token.startsWith("Bearer ");
-  }
+    // JWT 토큰에서 인증 정보 조회
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
+            userDetails.getAuthorities());
+    }
 
-  public boolean isNotBearerToken(String token) {
-    return !isBearerToken(token);
-  }
+    // 토큰에서 회원 정보 추출
+    public String getUserEmail(String token) {
+        return Jwts.parser()
+            .verifyWith(this.key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("email", String.class);
+    }
 
-  public String getToken(String token) {
-    return token.split(" ")[1];
-  }
+    // Request의 Header에서 token 값을 가져옵니다.
+    public String getAuthorizationHeaderValue(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
+
+    // 토큰의 유효성 + 만료일자 확인
+    public boolean isValidToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isNotValidToken(String token) {
+        return !isValidToken(token);
+    }
+
+    /**
+     * JWT Claims 추출
+     *
+     * @param token
+     * @return JWT Claims
+     */
+    public Claims parseClaims(String token) {
+        try {
+            return Jwts.parser()
+                .verifyWith(this.key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public boolean isBearerToken(String token) {
+        return token != null && token.startsWith("Bearer ");
+    }
+
+    public boolean isNotBearerToken(String token) {
+        return !isBearerToken(token);
+    }
+
+    public String getToken(String token) {
+        return token.split(" ")[1];
+    }
 
 }

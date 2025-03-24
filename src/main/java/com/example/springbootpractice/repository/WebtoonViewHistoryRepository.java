@@ -15,15 +15,15 @@ import org.springframework.stereotype.Repository;
 public interface WebtoonViewHistoryRepository extends
     JpaRepository<WebtoonViewHistoryEntity, Long> {
 
-  @Modifying
-  @Query("delete from WebtoonViewHistoryEntity wvh where wvh.user = :user")
-  void deleteByUser(UserEntity user);
+    @Modifying
+    @Query("delete from WebtoonViewHistoryEntity wvh where wvh.user = :user")
+    void deleteByUser(UserEntity user);
 
-  @Query("select wvh from WebtoonViewHistoryEntity wvh "
-      + "join fetch wvh.user "
-      + "where wvh.webtoon = :webtoon ")
-  Page<WebtoonViewHistoryEntity> findWebtoonViewHistory(@Param("webtoon") WebtoonEntity webtoon,
-      Pageable pageable);
+    @Query("select wvh from WebtoonViewHistoryEntity wvh "
+        + "join fetch wvh.user "
+        + "where wvh.webtoon = :webtoon ")
+    Page<WebtoonViewHistoryEntity> findWebtoonViewHistory(@Param("webtoon") WebtoonEntity webtoon,
+        Pageable pageable);
 
 
 }

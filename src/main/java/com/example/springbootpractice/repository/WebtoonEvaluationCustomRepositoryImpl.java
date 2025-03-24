@@ -12,35 +12,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebtoonEvaluationCustomRepositoryImpl implements WebtoonEvaluationCustomRepository {
 
-  private final JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
-  @Override
-  public List<WebtoonTop3Info> findTop3Webtoons(WebtoonEvaluationType evaluationType) {
-    QWebtoonEvaluationEntity webtoonEvaluation = QWebtoonEvaluationEntity.webtoonEvaluationEntity;
-    QWebtoonEntity webtoon = QWebtoonEntity.webtoonEntity;
-    return this.jpaQueryFactory
-        .select(
-            Projections.constructor(WebtoonTop3Info.class,
-                webtoon.seq,
-                webtoonEvaluation.count(),
+    @Override
+    public List<WebtoonTop3Info> findTop3Webtoons(WebtoonEvaluationType evaluationType) {
+        QWebtoonEvaluationEntity webtoonEvaluation = QWebtoonEvaluationEntity.webtoonEvaluationEntity;
+        QWebtoonEntity webtoon = QWebtoonEntity.webtoonEntity;
+        return this.jpaQueryFactory
+            .select(
+                Projections.constructor(WebtoonTop3Info.class,
+                    webtoon.seq,
+                    webtoonEvaluation.count(),
+                    webtoon.name,
+                    webtoon.author,
+                    webtoon.ratingType,
+                    webtoon.coin,
+                    webtoon.openDate
+                )
+            )
+            .from(webtoonEvaluation)
+            .innerJoin(webtoonEvaluation.webtoon, webtoon)
+            .where(webtoonEvaluation.evaluationType.eq(evaluationType))
+            .groupBy(webtoon.seq,
                 webtoon.name,
                 webtoon.author,
                 webtoon.ratingType,
                 webtoon.coin,
-                webtoon.openDate
-            )
-        )
-        .from(webtoonEvaluation)
-        .innerJoin(webtoonEvaluation.webtoon, webtoon)
-        .where(webtoonEvaluation.evaluationType.eq(evaluationType))
-        .groupBy(webtoon.seq,
-            webtoon.name,
-            webtoon.author,
-            webtoon.ratingType,
-            webtoon.coin,
-            webtoon.openDate)
-        .orderBy(webtoonEvaluation.count().desc(), webtoon.name.asc())
-        .limit(3)
-        .fetch();
-  }
+                webtoon.openDate)
+            .orderBy(webtoonEvaluation.count().desc(), webtoon.name.asc())
+            .limit(3)
+            .fetch();
+    }
 }

@@ -6,20 +6,20 @@ import org.springframework.security.core.userdetails.User;
 
 public class SecurityUser extends User {
 
-  private final UserEntity userEntity;
+    private final UserEntity userEntity;
 
-  public SecurityUser(UserEntity userEntity) {
-    super(userEntity.getEmail(), userEntity.getPassword(),
-        AuthorityUtils.createAuthorityList(userEntity.getRole().toString()));
-    this.userEntity = userEntity;
-  }
+    public SecurityUser(UserEntity userEntity) {
+        super(userEntity.getEmail(), userEntity.getPassword(),
+            AuthorityUtils.createAuthorityList(userEntity.getRole().toString()));
+        this.userEntity = userEntity;
+    }
 
-  public UserEntity getUser() {
-    return this.userEntity;
-  }
+    public UserEntity getUser() {
+        return this.userEntity;
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    return super.equals(obj);
-  }
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 }

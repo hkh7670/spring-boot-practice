@@ -16,15 +16,15 @@ public record AdultWebtoonViewersResponse(
     long viewCount
 ) {
 
-  public static AdultWebtoonViewersResponse from(UserEntity entity) {
-    return AdultWebtoonViewersResponse.builder()
-        .userSeq(entity.getSeq())
-        .userName(entity.getName())
-        .userEmail(entity.getEmail())
-        .gender(entity.getGender())
-        .userType(entity.getType())
-        .viewCount(entity.getAdultWebtoonViewCount())
-        .build();
-  }
+    public static AdultWebtoonViewersResponse from(UserEntity entity) {
+        return AdultWebtoonViewersResponse.builder()
+            .userSeq(entity.getSeq())
+            .userName(entity.getName())
+            .userEmail(entity.getEmail())
+            .gender(entity.getGender())
+            .userType(entity.getType())
+            .viewCount(entity.getAdultWebtoonViewCount())
+            .build();
+    }
 
 }

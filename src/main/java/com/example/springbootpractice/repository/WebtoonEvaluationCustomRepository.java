@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface WebtoonEvaluationCustomRepository {
 
-  List<WebtoonTop3Info> findTop3Webtoons(WebtoonEvaluationType evaluationType);
+    List<WebtoonTop3Info> findTop3Webtoons(WebtoonEvaluationType evaluationType);
 }

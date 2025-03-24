@@ -28,56 +28,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-  private final UserService userService;
+    private final UserService userService;
 
-  /**
-   * 회원 가입
-   *
-   * @param request
-   */
-  @PostMapping("/signup")
-  public ResponseEntity<SignUpResponse> requestSignUp(@RequestBody @Valid SignUpRequest request) {
-    log.info("회원가입 요청: {}", request.toString());
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(SignUpResponse.of(userService.createUser(request)));
-  }
+    /**
+     * 회원 가입
+     *
+     * @param request
+     */
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponse> requestSignUp(@RequestBody @Valid SignUpRequest request) {
+        log.info("회원가입 요청: {}", request.toString());
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(SignUpResponse.of(userService.createUser(request)));
+    }
 
-  /**
-   * 토큰 발급
-   *
-   * @param request
-   * @return
-   */
-  @PostMapping("/login")
-  public LogInResponse requestLogIn(
-      @RequestBody @Valid LogInRequest request) {
-    return new LogInResponse(userService.getJwtToken(request));
-  }
+    /**
+     * 토큰 발급
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/login")
+    public LogInResponse requestLogIn(
+        @RequestBody @Valid LogInRequest request) {
+        return new LogInResponse(userService.getJwtToken(request));
+    }
 
-  /**
-   * 회원 탈퇴
-   */
-  @DeleteMapping("/me")
-  public void requestDeleteMyself() {
-    userService.deleteMyself();
-  }
+    /**
+     * 회원 탈퇴
+     */
+    @DeleteMapping("/me")
+    public void requestDeleteMyself() {
+        userService.deleteMyself();
+    }
 
-  /**
-   * 최근 일주일 등록 사용자 중 성인작품 3개 이상 조회한 사용자 목록 조회 API (관리자용)
-   *
-   * @param request
-   * @return
-   */
-  @GetMapping("/adult-webtoon-view")
-  public Page<AdultWebtoonViewersResponse> requestAdultWebtoonViewers(
-      @ModelAttribute PagingRequest request) {
-    return userService.getAdultWebtoonViewers(
-        LocalDateTime.now().minusDays(7),
-        LocalDateTime.now(),
-        request.toPageable("seq")
-    );
-  }
+    /**
+     * 최근 일주일 등록 사용자 중 성인작품 3개 이상 조회한 사용자 목록 조회 API (관리자용)
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/adult-webtoon-view")
+    public Page<AdultWebtoonViewersResponse> requestAdultWebtoonViewers(
+        @ModelAttribute PagingRequest request) {
+        return userService.getAdultWebtoonViewers(
+            LocalDateTime.now().minusDays(7),
+            LocalDateTime.now(),
+            request.toPageable("seq")
+        );
+    }
 
 
 }

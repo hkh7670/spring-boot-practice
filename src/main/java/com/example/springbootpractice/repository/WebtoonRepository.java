@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WebtoonRepository extends JpaRepository<WebtoonEntity, Long> {
 
-  boolean existsBySeq(long seq);
+    boolean existsBySeq(long seq);
 
 }

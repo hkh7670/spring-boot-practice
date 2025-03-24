@@ -20,17 +20,18 @@ import org.springframework.stereotype.Component;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 
-  @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException authException) throws IOException {
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException authException) throws IOException {
 
-    log.error("인증되지 않은 접근: {}", authException.getMessage());
+        log.error("인증되지 않은 접근: {}", authException.getMessage());
 
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
 
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.writeValue(response.getOutputStream(), new ErrorResponse(ErrorCode.AUTHENTICATION_FAIL));
-  }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getOutputStream(),
+            new ErrorResponse(ErrorCode.AUTHENTICATION_FAIL));
+    }
 }

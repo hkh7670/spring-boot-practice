@@ -24,23 +24,23 @@ import org.hibernate.annotations.Comment;
 @Builder(access = AccessLevel.PRIVATE)
 public class WebtoonViewHistoryEntity extends BaseTimeEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long seq;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long seq;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "USER_SEQ")
-  private UserEntity user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_SEQ")
+    private UserEntity user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "WEBTOON_SEQ")
-  private WebtoonEntity webtoon;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "WEBTOON_SEQ")
+    private WebtoonEntity webtoon;
 
-  public static WebtoonViewHistoryEntity of(UserEntity user, WebtoonEntity webtoon) {
-    return WebtoonViewHistoryEntity.builder()
-        .user(user)
-        .webtoon(webtoon)
-        .build();
-  }
+    public static WebtoonViewHistoryEntity of(UserEntity user, WebtoonEntity webtoon) {
+        return WebtoonViewHistoryEntity.builder()
+            .user(user)
+            .webtoon(webtoon)
+            .build();
+    }
 
 }

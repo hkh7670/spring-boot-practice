@@ -24,62 +24,66 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/webtoon")
 public class WebtoonController {
 
-  private final WebtoonService webtoonService;
+    private final WebtoonService webtoonService;
 
-  /**
-   * 웹툰 평가 API (일반)
-   *
-   * @param webtoonSeq
-   * @param request
-   */
-  @PostMapping("/{webtoonSeq}/evaluation")
-  public void requestEvaluation(@PathVariable Long webtoonSeq,
-      @RequestBody @Valid WebtoonEvaluationRequest request) {
-    webtoonService.createWebtoonEvaluationInfo(webtoonSeq, request);
-  }
+    /**
+     * 웹툰 평가 API (일반)
+     *
+     * @param webtoonSeq
+     * @param request
+     */
+    @PostMapping("/{webtoonSeq}/evaluation")
+    public void requestEvaluation(@PathVariable Long webtoonSeq,
+        @RequestBody @Valid WebtoonEvaluationRequest request) {
+        webtoonService.createWebtoonEvaluationInfo(webtoonSeq, request);
+    }
 
-  /**
-   * 웹툰 좋아요/싫어요 TOP3 조회 API (일반)
-   * @return
-   */
-  @GetMapping("/top3")
-  public WebtoonTop3Response requestTop3Webtoons() {
-    return webtoonService.getTop3Webtoons();
-  }
+    /**
+     * 웹툰 좋아요/싫어요 TOP3 조회 API (일반)
+     *
+     * @return
+     */
+    @GetMapping("/top3")
+    public WebtoonTop3Response requestTop3Webtoons() {
+        return webtoonService.getTop3Webtoons();
+    }
 
 
-  /**
-   * 웹툰 조회 API (일반)
-   * @param webtoonSeq
-   * @return
-   */
-  @GetMapping("/{webtoonSeq}")
-  public WebtoonResponse requestWebtoon(@PathVariable Long webtoonSeq) {
-    return webtoonService.getWebtoon(webtoonSeq);
-  }
+    /**
+     * 웹툰 조회 API (일반)
+     *
+     * @param webtoonSeq
+     * @return
+     */
+    @GetMapping("/{webtoonSeq}")
+    public WebtoonResponse requestWebtoon(@PathVariable Long webtoonSeq) {
+        return webtoonService.getWebtoon(webtoonSeq);
+    }
 
-  /**
-   * 웹툰 조회내역 조회 API (일반)
-   * @param webtoonSeq
-   * @param request
-   * @return
-   */
-  @GetMapping("/{webtoonSeq}/view-history")
-  public Page<WebtoonViewHistoryResponse> requestWebtoonViewHistory(@PathVariable Long webtoonSeq,
-      @ModelAttribute PagingRequest request) {
-    return webtoonService.getWebtoonViewHistory(webtoonSeq, request.toPageable("seq"));
-  }
+    /**
+     * 웹툰 조회내역 조회 API (일반)
+     *
+     * @param webtoonSeq
+     * @param request
+     * @return
+     */
+    @GetMapping("/{webtoonSeq}/view-history")
+    public Page<WebtoonViewHistoryResponse> requestWebtoonViewHistory(@PathVariable Long webtoonSeq,
+        @ModelAttribute PagingRequest request) {
+        return webtoonService.getWebtoonViewHistory(webtoonSeq, request.toPageable("seq"));
+    }
 
-  /**
-   * 웹툰 금액 변경 API (관리자용)
-   * @param webtoonSeq
-   * @param request
-   */
-  @PutMapping("/{webtoonSeq}/coin")
-  public void requestUpdateWebtoonCoin(@PathVariable Long webtoonSeq,
-      @RequestBody @Valid UpdateWebtoonCoinRequest request) {
-    webtoonService.updateWebtoonCoin(webtoonSeq, request);
-  }
+    /**
+     * 웹툰 금액 변경 API (관리자용)
+     *
+     * @param webtoonSeq
+     * @param request
+     */
+    @PutMapping("/{webtoonSeq}/coin")
+    public void requestUpdateWebtoonCoin(@PathVariable Long webtoonSeq,
+        @RequestBody @Valid UpdateWebtoonCoinRequest request) {
+        webtoonService.updateWebtoonCoin(webtoonSeq, request);
+    }
 
 
 }

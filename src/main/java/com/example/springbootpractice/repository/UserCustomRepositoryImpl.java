@@ -17,49 +17,49 @@ import org.springframework.data.domain.Pageable;
 @RequiredArgsConstructor
 public class UserCustomRepositoryImpl implements UserCustomRepository {
 
-  private final JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
 
-  @Override
-  public Page<AdultWebtoonViewersResponse> findAdultWebtoonViewers(LocalDateTime from,
-      LocalDateTime to, Pageable pageable) {
-    QUserEntity user = QUserEntity.userEntity;
-    QWebtoonViewHistoryEntity viewHistory = QWebtoonViewHistoryEntity.webtoonViewHistoryEntity;
-    QWebtoonEntity webtoon = QWebtoonEntity.webtoonEntity;
-    List<AdultWebtoonViewersResponse> result = jpaQueryFactory
-        .select(
-            Projections.constructor(AdultWebtoonViewersResponse.class,
-                user.seq,
-                user.name,
-                user.email,
-                user.gender,
-                user.type,
-                viewHistory.count()
+    @Override
+    public Page<AdultWebtoonViewersResponse> findAdultWebtoonViewers(LocalDateTime from,
+        LocalDateTime to, Pageable pageable) {
+        QUserEntity user = QUserEntity.userEntity;
+        QWebtoonViewHistoryEntity viewHistory = QWebtoonViewHistoryEntity.webtoonViewHistoryEntity;
+        QWebtoonEntity webtoon = QWebtoonEntity.webtoonEntity;
+        List<AdultWebtoonViewersResponse> result = jpaQueryFactory
+            .select(
+                Projections.constructor(AdultWebtoonViewersResponse.class,
+                    user.seq,
+                    user.name,
+                    user.email,
+                    user.gender,
+                    user.type,
+                    viewHistory.count()
+                )
             )
-        )
-        .from(viewHistory)
-        .innerJoin(viewHistory.user, user)
-        .innerJoin(viewHistory.webtoon, webtoon)
-        .where(webtoon.ratingType.eq(WebtoonRatingType.ADULT),
-            user.regDate.between(from, to))
-        .groupBy(user.seq, user.name, user.email, user.gender, user.type)
-        .having(viewHistory.count().goe(3))
-        .offset(pageable.getOffset())
-        .limit(pageable.getPageSize())
-        .fetch();
+            .from(viewHistory)
+            .innerJoin(viewHistory.user, user)
+            .innerJoin(viewHistory.webtoon, webtoon)
+            .where(webtoon.ratingType.eq(WebtoonRatingType.ADULT),
+                user.regDate.between(from, to))
+            .groupBy(user.seq, user.name, user.email, user.gender, user.type)
+            .having(viewHistory.count().goe(3))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
-    long total = jpaQueryFactory
-        .select(
-            user.count()
-        )
-        .from(viewHistory)
-        .innerJoin(viewHistory.user, user)
-        .innerJoin(viewHistory.webtoon, webtoon)
-        .where(webtoon.ratingType.eq(WebtoonRatingType.ADULT),
-            user.regDate.between(from, to))
-        .groupBy(user.seq)
-        .having(viewHistory.count().goe(3))
-        .fetchOne();
-    return new PageImpl<>(result, pageable, total);
+        long total = jpaQueryFactory
+            .select(
+                user.count()
+            )
+            .from(viewHistory)
+            .innerJoin(viewHistory.user, user)
+            .innerJoin(viewHistory.webtoon, webtoon)
+            .where(webtoon.ratingType.eq(WebtoonRatingType.ADULT),
+                user.regDate.between(from, to))
+            .groupBy(user.seq)
+            .having(viewHistory.count().goe(3))
+            .fetchOne();
+        return new PageImpl<>(result, pageable, total);
 
-  }
+    }
 }

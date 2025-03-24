@@ -13,17 +13,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-  Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
 
-  boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
-  @Modifying
-  @Query("delete from UserEntity u where u.seq = :userSeq")
-  void deleteByUserSeq(long userSeq);
+    @Modifying
+    @Query("delete from UserEntity u where u.seq = :userSeq")
+    void deleteByUserSeq(long userSeq);
 
-  @Query("select u from UserEntity u "
-      + "where u.adultWebtoonViewCount >=3 "
-      + "and u.regDate between :from and :to ")
-  Page<UserEntity> findAdultWebtoonViewers(LocalDateTime from, LocalDateTime to, Pageable pageable);
+    @Query("select u from UserEntity u "
+        + "where u.adultWebtoonViewCount >=3 "
+        + "and u.regDate between :from and :to ")
+    Page<UserEntity> findAdultWebtoonViewers(LocalDateTime from, LocalDateTime to,
+        Pageable pageable);
 
 }

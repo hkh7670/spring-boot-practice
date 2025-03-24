@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum UserType {
-  NORMAL("일반"),
-  ADULT("성인");
+    NORMAL("일반"),
+    ADULT("성인");
 
-  private final String desc;
+    private final String desc;
 }

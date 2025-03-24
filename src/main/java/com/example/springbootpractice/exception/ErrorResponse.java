@@ -10,21 +10,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ErrorResponse {
 
-  private final ErrorCode errorCode;
-  private final String message;
-  @JsonInclude(Include.NON_EMPTY)
-  private final List<ErrorField> errorFields;
+    private final ErrorCode errorCode;
+    private final String message;
+    @JsonInclude(Include.NON_EMPTY)
+    private final List<ErrorField> errorFields;
 
-  public ErrorResponse(ErrorCode errorCode) {
-    this.errorCode = errorCode;
-    this.message = errorCode.getMessage();
-    this.errorFields = null;
-  }
+    public ErrorResponse(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+        this.message = errorCode.getMessage();
+        this.errorFields = null;
+    }
 
-  public ErrorResponse(ErrorCode errorCode, List<ErrorField> errorFields) {
-    this.errorCode = errorCode;
-    this.message = errorCode.getMessage();
-    this.errorFields = errorFields;
-  }
+    public ErrorResponse(ErrorCode errorCode, List<ErrorField> errorFields) {
+        this.errorCode = errorCode;
+        this.message = errorCode.getMessage();
+        this.errorFields = errorFields;
+    }
 
 }

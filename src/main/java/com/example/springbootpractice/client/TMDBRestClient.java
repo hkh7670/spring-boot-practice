@@ -10,10 +10,10 @@ import org.springframework.web.service.annotation.HttpExchange;
 @HttpExchange
 public interface TMDBRestClient {
 
-  @GetExchange(value = "/movie/popular")
-  TMDBPopularMoviePageResponse getPopularMovies(
-      @RequestParam(name = "language", defaultValue = "ko-KR") String language,
-      @RequestParam(name = "page", defaultValue = "1") Integer page
-  );
+    @GetExchange(value = "/movie/popular")
+    TMDBPopularMoviePageResponse getPopularMovies(
+        @RequestParam(name = "language", defaultValue = "ko-KR") String language,
+        @RequestParam(name = "page", defaultValue = "1") Integer page
+    );
 
 }

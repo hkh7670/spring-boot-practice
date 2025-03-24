@@ -30,112 +30,112 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 class UserControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Autowired
-  private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  @Autowired
-  private WebtoonService webtoonService;
+    @Autowired
+    private WebtoonService webtoonService;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-  @Test
-  @DisplayName("회원 가입 실패 - 이메일 주소 패턴 매칭 실패 시 에러처리")
-  void requestSignUpFailTest() throws Exception {
-    // given
-    SignUpRequest request = new SignUpRequest(
-        "한규호",
-        "ghhan@asdasd",
-        "ghhan1234",
-        Role.ROLE_USER,
-        Gender.MALE,
-        UserType.ADULT
-    );
-    // when
-    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/user/signup")
+    @Test
+    @DisplayName("회원 가입 실패 - 이메일 주소 패턴 매칭 실패 시 에러처리")
+    void requestSignUpFailTest() throws Exception {
+        // given
+        SignUpRequest request = new SignUpRequest(
+            "한규호",
+            "ghhan@asdasd",
+            "ghhan1234",
+            Role.ROLE_USER,
+            Gender.MALE,
+            UserType.ADULT
+        );
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/user/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(
+                new ErrorResponse(ErrorCode.SCHEMA_VALIDATE_ERROR))));
+    }
+
+    @Test
+    @DisplayName("회원 가입 성공")
+    void requestSignUp() throws Exception {
+        // given
+        SignUpRequest request = new SignUpRequest(
+            "한규호",
+            "ghhan@abc.com",
+            "ghhan12345",
+            Role.ROLE_USER,
+            Gender.MALE,
+            UserType.ADULT
+        );
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/user/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON))
+            // then
+            .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    @DisplayName("JWT 토큰 발급 성공")
+    void requestLogIn() throws Exception {
+        // given
+        LogInRequest request = new LogInRequest("ghhan@abc.com", "ghhan12345");
+        userService.createUser(new SignUpRequest(
+            "한규호",
+            "ghhan@abc.com",
+            "ghhan12345",
+            Role.ROLE_USER,
+            Gender.MALE,
+            UserType.ADULT
+        ));
+
+        // when
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/user/login")
             .content(objectMapper.writeValueAsString(request))
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON));
+
         // then
-        .andExpect(MockMvcResultMatchers.status().isBadRequest())
-        .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(
-            new ErrorResponse(ErrorCode.SCHEMA_VALIDATE_ERROR))));
-  }
+        actions
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").isNotEmpty());
+    }
 
-  @Test
-  @DisplayName("회원 가입 성공")
-  void requestSignUp() throws Exception {
-    // given
-    SignUpRequest request = new SignUpRequest(
-        "한규호",
-        "ghhan@abc.com",
-        "ghhan12345",
-        Role.ROLE_USER,
-        Gender.MALE,
-        UserType.ADULT
-    );
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void requestDeleteMe() throws Exception {
+        // given
+        userService.createUser(new SignUpRequest(
+            "한규호",
+            "ghhan@abc.com",
+            "ghhan12345",
+            Role.ROLE_USER,
+            Gender.MALE,
+            UserType.ADULT
+        ));
+        LogInRequest logInRequest = new LogInRequest("ghhan@abc.com", "ghhan12345");
+        String jwtToken = userService.getJwtToken(logInRequest);
 
-    // when
-    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/user/signup")
-            .content(objectMapper.writeValueAsString(request))
-            .contentType(MediaType.APPLICATION_JSON))
+        // when
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/user/me")
+            .header("Authorization", "Bearer " + jwtToken)
+            .contentType(MediaType.APPLICATION_JSON));
+
         // then
-        .andExpect(MockMvcResultMatchers.status().isCreated());
-  }
+        actions.andExpect(MockMvcResultMatchers.status().isOk());
 
-  @Test
-  @DisplayName("JWT 토큰 발급 성공")
-  void requestLogIn() throws Exception {
-    // given
-    LogInRequest request = new LogInRequest("ghhan@abc.com", "ghhan12345");
-    userService.createUser(new SignUpRequest(
-        "한규호",
-        "ghhan@abc.com",
-        "ghhan12345",
-        Role.ROLE_USER,
-        Gender.MALE,
-        UserType.ADULT
-    ));
-
-    // when
-    ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/user/login")
-        .content(objectMapper.writeValueAsString(request))
-        .contentType(MediaType.APPLICATION_JSON));
-
-    // then
-    actions
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").isNotEmpty());
-  }
-
-  @Test
-  @DisplayName("회원 탈퇴 성공")
-  void requestDeleteMe() throws Exception {
-    // given
-    userService.createUser(new SignUpRequest(
-        "한규호",
-        "ghhan@abc.com",
-        "ghhan12345",
-        Role.ROLE_USER,
-        Gender.MALE,
-        UserType.ADULT
-    ));
-    LogInRequest logInRequest = new LogInRequest("ghhan@abc.com", "ghhan12345");
-    String jwtToken = userService.getJwtToken(logInRequest);
-
-    // when
-    ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/user/me")
-        .header("Authorization", "Bearer " + jwtToken)
-        .contentType(MediaType.APPLICATION_JSON));
-
-    // then
-    actions.andExpect(MockMvcResultMatchers.status().isOk());
-
-    // 탈퇴 회원 조회 시 NOT_FOUND_USER exception 발생
-    assertThrows(ApiErrorException.class, () ->
-        userService.getUserByEmail("ghhan@abc.com"));
-  }
+        // 탈퇴 회원 조회 시 NOT_FOUND_USER exception 발생
+        assertThrows(ApiErrorException.class, () ->
+            userService.getUserByEmail("ghhan@abc.com"));
+    }
 
 }

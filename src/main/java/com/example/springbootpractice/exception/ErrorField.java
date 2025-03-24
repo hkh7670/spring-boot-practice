@@ -9,11 +9,11 @@ public record ErrorField(
     String message
 ) {
 
-  public static ErrorField of(String fieldName, String message) {
-    return ErrorField.builder()
-        .fieldName(fieldName)
-        .message(message)
-        .build();
-  }
+    public static ErrorField of(String fieldName, String message) {
+        return ErrorField.builder()
+            .fieldName(fieldName)
+            .message(message)
+            .build();
+    }
 
 }

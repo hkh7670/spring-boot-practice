@@ -15,32 +15,32 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @RequiredArgsConstructor
 public class TMDBService {
 
-  private final UserService userService;
-  private final TMDBRestClient tmdbRestClient;
-  private final MovieRepository movieRepository;
-  private final TMDB2Service tmdb2Service;
+    private final UserService userService;
+    private final TMDBRestClient tmdbRestClient;
+    private final MovieRepository movieRepository;
+    private final TMDB2Service tmdb2Service;
 
-  public PopularMoviePageResponse getPopularMovies(int page) {
-    return PopularMoviePageResponse.from(
-        tmdbRestClient.getPopularMovies(null, page)
-    );
-  }
+    public PopularMoviePageResponse getPopularMovies(int page) {
+        return PopularMoviePageResponse.from(
+            tmdbRestClient.getPopularMovies(null, page)
+        );
+    }
 
-  @Transactional
-  public void insertPopularMovies() {
-    String transactionName = TransactionSynchronizationManager.getCurrentTransactionName();
-    boolean isActualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
-    log.info("START TRANSACTION: {}", transactionName);
-    log.info("isActualTransactionActive: {}", isActualTransactionActive);
+    @Transactional
+    public void insertPopularMovies() {
+        String transactionName = TransactionSynchronizationManager.getCurrentTransactionName();
+        boolean isActualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
+        log.info("START TRANSACTION: {}", transactionName);
+        log.info("isActualTransactionActive: {}", isActualTransactionActive);
 
-    PopularMoviePageResponse res = getPopularMovies(1);
-    movieRepository.saveAll(
-        res.results().stream()
-            .map(item -> MovieEntity.of(item, 1))
-            .toList()
-    );
-    PopularMoviePageResponse res2 = getPopularMovies(2);
-    tmdb2Service.insertPopularMovies2(res2);
+        PopularMoviePageResponse res = getPopularMovies(1);
+        movieRepository.saveAll(
+            res.results().stream()
+                .map(item -> MovieEntity.of(item, 1))
+                .toList()
+        );
+        PopularMoviePageResponse res2 = getPopularMovies(2);
+        tmdb2Service.insertPopularMovies2(res2);
 //    try {
 //      tmdb2Service.insertPopularMovies2(res2);
 //    } catch (Exception e) {
@@ -48,6 +48,6 @@ public class TMDBService {
 //    }
 //    throw new RuntimeException();
 
-  }
+    }
 
 }

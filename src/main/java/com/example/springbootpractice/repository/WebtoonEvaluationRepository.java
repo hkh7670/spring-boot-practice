@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 public interface WebtoonEvaluationRepository extends JpaRepository<WebtoonEvaluationEntity, Long>,
     WebtoonEvaluationCustomRepository {
 
-  @Modifying
-  @Query("delete from WebtoonEvaluationEntity we where we.userSeq = :userSeq")
-  void deleteByUserSeq(long userSeq);
+    @Modifying
+    @Query("delete from WebtoonEvaluationEntity we where we.userSeq = :userSeq")
+    void deleteByUserSeq(long userSeq);
 
-  boolean existsByUserSeqAndWebtoonSeq(long userSeq, long webtoonSeq);
+    boolean existsByUserSeqAndWebtoonSeq(long userSeq, long webtoonSeq);
 
 
 }

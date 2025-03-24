@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum WebtoonEvaluationType {
-  LIKE("좋아요"),
-  DISLIKE("싫어요");
+    LIKE("좋아요"),
+    DISLIKE("싫어요");
 
-  private final String desc;
+    private final String desc;
 }

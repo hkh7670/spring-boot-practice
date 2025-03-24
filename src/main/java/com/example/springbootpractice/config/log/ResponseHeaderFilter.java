@@ -16,16 +16,16 @@ import org.springframework.util.StringUtils;
 @Component
 public class ResponseHeaderFilter implements Filter {
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-    String requestId = MDC.get(REQUEST_ID_HEADER);
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        String requestId = MDC.get(REQUEST_ID_HEADER);
 
-    if (StringUtils.hasText(requestId)) {
-      httpServletResponse.setHeader(REQUEST_ID_HEADER, requestId);
+        if (StringUtils.hasText(requestId)) {
+            httpServletResponse.setHeader(REQUEST_ID_HEADER, requestId);
+        }
+
+        chain.doFilter(request, response);
     }
-
-    chain.doFilter(request, response);
-  }
 }

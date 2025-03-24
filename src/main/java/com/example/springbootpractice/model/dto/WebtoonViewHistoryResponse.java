@@ -18,16 +18,16 @@ public record WebtoonViewHistoryResponse(
     LocalDateTime viewDateTime
 ) {
 
-  public static WebtoonViewHistoryResponse from(WebtoonViewHistoryEntity entity) {
-    UserEntity user = entity.getUser();
-    return WebtoonViewHistoryResponse.builder()
-        .userSeq(user.getSeq())
-        .userName(user.getName())
-        .userEmail(user.getEmail())
-        .gender(user.getGender())
-        .userType(user.getType())
-        .viewDateTime(entity.getRegDate())
-        .build();
-  }
+    public static WebtoonViewHistoryResponse from(WebtoonViewHistoryEntity entity) {
+        UserEntity user = entity.getUser();
+        return WebtoonViewHistoryResponse.builder()
+            .userSeq(user.getSeq())
+            .userName(user.getName())
+            .userEmail(user.getEmail())
+            .gender(user.getGender())
+            .userType(user.getType())
+            .viewDateTime(entity.getRegDate())
+            .build();
+    }
 
 }

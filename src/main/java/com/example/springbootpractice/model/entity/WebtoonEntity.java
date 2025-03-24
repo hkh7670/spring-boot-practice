@@ -26,32 +26,32 @@ import org.hibernate.annotations.Comment;
 @Builder(access = AccessLevel.PRIVATE)
 public class WebtoonEntity extends BaseTimeEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long seq;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long seq;
 
-  @Column(name = "NAME", nullable = false)
-  @Comment("작품명")
-  private String name;
+    @Column(name = "NAME", nullable = false)
+    @Comment("작품명")
+    private String name;
 
-  @Column(name = "author", nullable = false)
-  @Comment("작가")
-  private String author;
+    @Column(name = "author", nullable = false)
+    @Comment("작가")
+    private String author;
 
-  @Column(name = "COIN", nullable = false)
-  @Comment("금액")
-  private Long coin;
+    @Column(name = "COIN", nullable = false)
+    @Comment("금액")
+    private Long coin;
 
-  @Column(name = "OPEN_DATE", nullable = false, columnDefinition = "TIMESTAMP(6)")
-  @Comment("서비스 제공일")
-  private LocalDateTime openDate;
+    @Column(name = "OPEN_DATE", nullable = false, columnDefinition = "TIMESTAMP(6)")
+    @Comment("서비스 제공일")
+    private LocalDateTime openDate;
 
-  @Column(name = "RATING_TYPE", nullable = false)
-  @Enumerated(EnumType.STRING)
-  @Comment("웹툰 등급 (일반 or 성인물)")
-  private WebtoonRatingType ratingType;
+    @Column(name = "RATING_TYPE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Comment("웹툰 등급 (일반 or 성인물)")
+    private WebtoonRatingType ratingType;
 
-  public void updateCoin(Long coin) {
-    this.coin = coin;
-  }
+    public void updateCoin(Long coin) {
+        this.coin = coin;
+    }
 }

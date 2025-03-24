@@ -23,53 +23,53 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-  private final UserRepository userRepository;
-  private final WebtoonService webtoonService;
-  private final JwtTokenProvider jwtTokenProvider;
-  private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final WebtoonService webtoonService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
 
-  public UserEntity getUserByEmail(String email) {
-    return userRepository.findByEmail(email)
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
-  }
-
-  @Transactional
-  public long createUser(SignUpRequest request) {
-    if (userRepository.existsByEmail(request.email())) {
-      throw new ApiErrorException(ErrorCode.DUPLICATED_EMAIL);
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
     }
-    return userRepository.save(
-        UserEntity.of(request, this.passwordEncoder.encode(request.password()))
-    ).getSeq();
-  }
 
-  @Transactional(readOnly = true)
-  public String getJwtToken(LogInRequest request) {
-    UserEntity user = getUserByEmail(request.email());
-    if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-      throw new ApiErrorException(ErrorCode.INCORRECT_PASSWORD);
+    @Transactional
+    public long createUser(SignUpRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new ApiErrorException(ErrorCode.DUPLICATED_EMAIL);
+        }
+        return userRepository.save(
+            UserEntity.of(request, this.passwordEncoder.encode(request.password()))
+        ).getSeq();
     }
-    return jwtTokenProvider.createToken(user.getEmail(), user.getRole());
-  }
 
-  @Transactional
-  public void deleteMyself() {
-    UserEntity user = SecurityUtil.getCurrentUser();
-    // 웹툰 조회 내역, 웹툰 평가 내역 삭제
-    webtoonService.deleteWebtoonHistories(user);
-    // 유저 삭제
-    userRepository.deleteByUserSeq(user.getSeq());
-  }
+    @Transactional(readOnly = true)
+    public String getJwtToken(LogInRequest request) {
+        UserEntity user = getUserByEmail(request.email());
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new ApiErrorException(ErrorCode.INCORRECT_PASSWORD);
+        }
+        return jwtTokenProvider.createToken(user.getEmail(), user.getRole());
+    }
 
-  @Transactional(readOnly = true)
-  public Page<AdultWebtoonViewersResponse> getAdultWebtoonViewers(
-      LocalDateTime from,
-      LocalDateTime to,
-      Pageable pageable
-  ) {
-    Page<UserEntity> page = userRepository.findAdultWebtoonViewers(from, to, pageable);
-    return page.map(AdultWebtoonViewersResponse::from);
-  }
+    @Transactional
+    public void deleteMyself() {
+        UserEntity user = SecurityUtil.getCurrentUser();
+        // 웹툰 조회 내역, 웹툰 평가 내역 삭제
+        webtoonService.deleteWebtoonHistories(user);
+        // 유저 삭제
+        userRepository.deleteByUserSeq(user.getSeq());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdultWebtoonViewersResponse> getAdultWebtoonViewers(
+        LocalDateTime from,
+        LocalDateTime to,
+        Pageable pageable
+    ) {
+        Page<UserEntity> page = userRepository.findAdultWebtoonViewers(from, to, pageable);
+        return page.map(AdultWebtoonViewersResponse::from);
+    }
 
 }

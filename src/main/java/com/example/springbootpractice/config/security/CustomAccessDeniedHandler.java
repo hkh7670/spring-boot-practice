@@ -20,17 +20,18 @@ import org.springframework.stereotype.Component;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 
-  @Override
-  public void handle(HttpServletRequest request, HttpServletResponse response,
-      AccessDeniedException accessDeniedException) throws IOException {
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+        AccessDeniedException accessDeniedException) throws IOException {
 
-    log.error("접근 권한 없음: {}", accessDeniedException.getMessage());
+        log.error("접근 권한 없음: {}", accessDeniedException.getMessage());
 
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-    response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
 
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.writeValue(response.getOutputStream(), new ErrorResponse(ErrorCode.AUTHORIZATION_FAIL));
-  }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getOutputStream(),
+            new ErrorResponse(ErrorCode.AUTHORIZATION_FAIL));
+    }
 }

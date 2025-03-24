@@ -32,101 +32,101 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class WebtoonService {
 
-  private final WebtoonEvaluationRepository webtoonEvaluationRepository;
-  private final WebtoonRepository webtoonRepository;
-  private final WebtoonViewHistoryRepository webtoonViewHistoryRepository;
-  private final UserRepository userRepository;
+    private final WebtoonEvaluationRepository webtoonEvaluationRepository;
+    private final WebtoonRepository webtoonRepository;
+    private final WebtoonViewHistoryRepository webtoonViewHistoryRepository;
+    private final UserRepository userRepository;
 
 
-  @Transactional
-  public void createWebtoonEvaluationInfo(
-      long webtoonSeq,
-      WebtoonEvaluationRequest request
-  ) {
-    UserEntity user = SecurityUtil.getCurrentUser();
-    WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
+    @Transactional
+    public void createWebtoonEvaluationInfo(
+        long webtoonSeq,
+        WebtoonEvaluationRequest request
+    ) {
+        UserEntity user = SecurityUtil.getCurrentUser();
+        WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
+            .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
 
-    // 웹툰 접근 권한 체크
-    if (user.cannotAccessWebtoon(webtoon)) {
-      throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_FOR_WEBTOON);
+        // 웹툰 접근 권한 체크
+        if (user.cannotAccessWebtoon(webtoon)) {
+            throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_FOR_WEBTOON);
+        }
+
+        // 유저가 이미 평가 정보를 입력한 경우 에러 처리
+        if (webtoonEvaluationRepository.existsByUserSeqAndWebtoonSeq(user.getSeq(), webtoonSeq)) {
+            throw new ApiErrorException(ErrorCode.ALREADY_EXIST_WEBTOON_EVALUATION_INFO);
+        }
+
+        webtoonEvaluationRepository.save(
+            WebtoonEvaluationEntity.of(webtoon, user.getSeq(), request)
+        );
     }
 
-    // 유저가 이미 평가 정보를 입력한 경우 에러 처리
-    if (webtoonEvaluationRepository.existsByUserSeqAndWebtoonSeq(user.getSeq(), webtoonSeq)) {
-      throw new ApiErrorException(ErrorCode.ALREADY_EXIST_WEBTOON_EVALUATION_INFO);
+    @Transactional(readOnly = true)
+    public WebtoonTop3Response getTop3Webtoons() {
+        return WebtoonTop3Response.of(
+            getLikeTop3Webtoons(),
+            getDislikeTop3Webtoons()
+        );
     }
 
-    webtoonEvaluationRepository.save(
-        WebtoonEvaluationEntity.of(webtoon, user.getSeq(), request)
-    );
-  }
+    private List<WebtoonTop3Info> getLikeTop3Webtoons() {
+        return webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.LIKE);
+    }
 
-  @Transactional(readOnly = true)
-  public WebtoonTop3Response getTop3Webtoons() {
-    return WebtoonTop3Response.of(
-        getLikeTop3Webtoons(),
-        getDislikeTop3Webtoons()
-    );
-  }
+    private List<WebtoonTop3Info> getDislikeTop3Webtoons() {
+        return webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.DISLIKE);
+    }
 
-  private List<WebtoonTop3Info> getLikeTop3Webtoons() {
-    return webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.LIKE);
-  }
-
-  private List<WebtoonTop3Info> getDislikeTop3Webtoons() {
-    return webtoonEvaluationRepository.findTop3Webtoons(WebtoonEvaluationType.DISLIKE);
-  }
-
-  @Transactional
-  public WebtoonResponse getWebtoon(long webtoonSeq) {
-    WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-    UserEntity user = userRepository.findById(SecurityUtil.getCurrentUserSeq())
+    @Transactional
+    public WebtoonResponse getWebtoon(long webtoonSeq) {
+        WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
+            .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
+        UserEntity user = userRepository.findById(SecurityUtil.getCurrentUserSeq())
             .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
 
-    // 웹툰 접근 권한 체크
-    if (user.cannotAccessWebtoon(webtoon)) {
-      throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_FOR_WEBTOON);
+        // 웹툰 접근 권한 체크
+        if (user.cannotAccessWebtoon(webtoon)) {
+            throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_FOR_WEBTOON);
+        }
+
+        // 웹툰 조회 내역 저장
+        webtoonViewHistoryRepository.save(WebtoonViewHistoryEntity.of(user, webtoon));
+
+        // 성인 작품 조회 시 회원의 성인 작품 조회 수 카운트 증가
+        if (WebtoonRatingType.ADULT.equals(webtoon.getRatingType())) {
+            user.increaseAdultWebtoonViewCount();
+        }
+
+        return WebtoonResponse.from(webtoon);
     }
 
-    // 웹툰 조회 내역 저장
-    webtoonViewHistoryRepository.save(WebtoonViewHistoryEntity.of(user, webtoon));
-
-    // 성인 작품 조회 시 회원의 성인 작품 조회 수 카운트 증가
-    if (WebtoonRatingType.ADULT.equals(webtoon.getRatingType())) {
-      user.increaseAdultWebtoonViewCount();
+    @Transactional(readOnly = true)
+    public Page<WebtoonViewHistoryResponse> getWebtoonViewHistory(
+        long webtoonSeq,
+        Pageable pageable
+    ) {
+        WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
+            .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
+        return webtoonViewHistoryRepository.findWebtoonViewHistory(webtoon, pageable)
+            .map(WebtoonViewHistoryResponse::from);
     }
 
-    return WebtoonResponse.from(webtoon);
-  }
+    @Transactional
+    public void updateWebtoonCoin(long webtoonSeq, UpdateWebtoonCoinRequest request) {
+        WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
+            .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
+        webtoon.updateCoin(request.coin());
+    }
 
-  @Transactional(readOnly = true)
-  public Page<WebtoonViewHistoryResponse> getWebtoonViewHistory(
-      long webtoonSeq,
-      Pageable pageable
-  ) {
-    WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-    return webtoonViewHistoryRepository.findWebtoonViewHistory(webtoon, pageable)
-        .map(WebtoonViewHistoryResponse::from);
-  }
-
-  @Transactional
-  public void updateWebtoonCoin(long webtoonSeq, UpdateWebtoonCoinRequest request) {
-    WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-    webtoon.updateCoin(request.coin());
-  }
-
-  /**
-   * 웹툰 조회 내역, 웹툰 평가 내역 삭제
-   */
-  @Transactional
-  public void deleteWebtoonHistories(UserEntity user) {
-    // 웹툰 조회 내역 삭제
-    webtoonViewHistoryRepository.deleteByUser(user);
-    // 웹툰 평가 내역 삭제
-    webtoonEvaluationRepository.deleteByUserSeq(user.getSeq());
-  }
+    /**
+     * 웹툰 조회 내역, 웹툰 평가 내역 삭제
+     */
+    @Transactional
+    public void deleteWebtoonHistories(UserEntity user) {
+        // 웹툰 조회 내역 삭제
+        webtoonViewHistoryRepository.deleteByUser(user);
+        // 웹툰 평가 내역 삭제
+        webtoonEvaluationRepository.deleteByUserSeq(user.getSeq());
+    }
 }

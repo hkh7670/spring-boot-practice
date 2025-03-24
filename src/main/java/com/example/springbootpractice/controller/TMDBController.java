@@ -16,31 +16,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/tmdb")
 public class TMDBController {
 
-  private final TMDBService tmdbService;
+    private final TMDBService tmdbService;
 
-  /**
-   * 인기 영화 조회
-   *
-   * @return 인기 영화 리스트
-   */
-  @GetMapping("/movie/popular")
-  public PopularMoviePageResponse getPopularMovies(
-      @RequestParam(required = false, defaultValue = "1") int page) {
-    return tmdbService.getPopularMovies(page);
-  }
+    /**
+     * 인기 영화 조회
+     *
+     * @return 인기 영화 리스트
+     */
+    @GetMapping("/movie/popular")
+    public PopularMoviePageResponse getPopularMovies(
+        @RequestParam(required = false, defaultValue = "1") int page) {
+        return tmdbService.getPopularMovies(page);
+    }
 
-  /**
-   * 인기 영화 등록
-   *
-   * @return 인기 영화 리스트
-   */
-  @PostMapping("/movie/popular")
-  public ResponseEntity<?> insertPopularMovies() {
-    tmdbService.insertPopularMovies();
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .build();
-  }
+    /**
+     * 인기 영화 등록
+     *
+     * @return 인기 영화 리스트
+     */
+    @PostMapping("/movie/popular")
+    public ResponseEntity<?> insertPopularMovies() {
+        tmdbService.insertPopularMovies();
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .build();
+    }
 
 
 }

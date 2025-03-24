@@ -13,44 +13,44 @@ public record TMDBPopularMoviePageResponse(
     List<TMDBPopularMovieInfo> results
 ) {
 
-  public record TMDBPopularMovieInfo(
-      long id,
-      
-      String title,
+    public record TMDBPopularMovieInfo(
+        long id,
 
-      String overview,
+        String title,
 
-      @JsonProperty("original_title")
-      String originalTitle,
+        String overview,
 
-      @JsonProperty("original_language")
-      String originalLanguage,
+        @JsonProperty("original_title")
+        String originalTitle,
 
-      @JsonProperty("vote_count")
-      int voteCount,
+        @JsonProperty("original_language")
+        String originalLanguage,
 
-      @JsonProperty("vote_average")
-      double voteAverage,
+        @JsonProperty("vote_count")
+        int voteCount,
 
-      double popularity,
+        @JsonProperty("vote_average")
+        double voteAverage,
 
-      @JsonProperty("poster_path")
-      String posterPath,
+        double popularity,
 
-      @JsonProperty("release_date")
-      LocalDate releaseDate,
+        @JsonProperty("poster_path")
+        String posterPath,
 
-      boolean video,
+        @JsonProperty("release_date")
+        LocalDate releaseDate,
 
-      boolean adult,
+        boolean video,
 
-      @JsonProperty("backdrop_path")
-      String backdropPath,
+        boolean adult,
 
-      @JsonProperty("genre_ids")
-      List<Long> genreIds
-  ) {
+        @JsonProperty("backdrop_path")
+        String backdropPath,
 
-  }
+        @JsonProperty("genre_ids")
+        List<Long> genreIds
+    ) {
+
+    }
 
 }

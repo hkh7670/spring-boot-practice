@@ -36,36 +36,36 @@ import org.hibernate.annotations.Comment;
 @Builder(access = AccessLevel.PRIVATE)
 public class WebtoonEvaluationEntity extends BaseTimeEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long seq;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long seq;
 
-  @Column(name = "USER_SEQ", nullable = false)
-  @Comment("유저 seq")
-  private Long userSeq;
+    @Column(name = "USER_SEQ", nullable = false)
+    @Comment("유저 seq")
+    private Long userSeq;
 
-  @Column(name = "EVALUATION_TYPE", nullable = false)
-  @Enumerated(EnumType.STRING)
-  @Comment("작품 평가 타입")
-  private WebtoonEvaluationType evaluationType;
+    @Column(name = "EVALUATION_TYPE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Comment("작품 평가 타입")
+    private WebtoonEvaluationType evaluationType;
 
-  @Column(name = "COMMENT")
-  @Comment("코멘트")
-  private String comment;
+    @Column(name = "COMMENT")
+    @Comment("코멘트")
+    private String comment;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "WEBTOON_SEQ")
-  private WebtoonEntity webtoon;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "WEBTOON_SEQ")
+    private WebtoonEntity webtoon;
 
 
-  public static WebtoonEvaluationEntity of(WebtoonEntity webtoon, long userSeq,
-      WebtoonEvaluationRequest request) {
-    return WebtoonEvaluationEntity.builder()
-        .userSeq(userSeq)
-        .webtoon(webtoon)
-        .evaluationType(request.evaluationType())
-        .comment(request.comment())
-        .build();
-  }
+    public static WebtoonEvaluationEntity of(WebtoonEntity webtoon, long userSeq,
+        WebtoonEvaluationRequest request) {
+        return WebtoonEvaluationEntity.builder()
+            .userSeq(userSeq)
+            .webtoon(webtoon)
+            .evaluationType(request.evaluationType())
+            .comment(request.comment())
+            .build();
+    }
 
 }

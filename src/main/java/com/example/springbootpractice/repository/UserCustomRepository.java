@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserCustomRepository {
 
-  Page<AdultWebtoonViewersResponse> findAdultWebtoonViewers(LocalDateTime from, LocalDateTime to,
-      Pageable pageable);
+    Page<AdultWebtoonViewersResponse> findAdultWebtoonViewers(LocalDateTime from, LocalDateTime to,
+        Pageable pageable);
 }

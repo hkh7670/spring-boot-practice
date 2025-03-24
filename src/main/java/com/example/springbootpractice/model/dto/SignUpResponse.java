@@ -9,10 +9,10 @@ public record SignUpResponse(
 
 ) {
 
-  public static SignUpResponse of(long seq) {
-    return SignUpResponse.builder()
-        .seq(seq)
-        .build();
-  }
+    public static SignUpResponse of(long seq) {
+        return SignUpResponse.builder()
+            .seq(seq)
+            .build();
+    }
 
 }

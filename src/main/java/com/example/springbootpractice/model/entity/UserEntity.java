@@ -36,70 +36,70 @@ import org.hibernate.annotations.Comment;
 @Builder(access = AccessLevel.PRIVATE)
 public class UserEntity extends BaseTimeEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long seq;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long seq;
 
-  @Column(name = "name", nullable = false)
-  @Comment("유저 이름")
-  private String name;
+    @Column(name = "name", nullable = false)
+    @Comment("유저 이름")
+    private String name;
 
-  @Column(name = "email", nullable = false)
-  @Comment("유저 이메일")
-  private String email;
+    @Column(name = "email", nullable = false)
+    @Comment("유저 이메일")
+    private String email;
 
-  @Column(name = "password", nullable = false)
-  @Comment("패스워드")
-  private String password;
+    @Column(name = "password", nullable = false)
+    @Comment("패스워드")
+    private String password;
 
-  @Column(name = "role", nullable = false)
-  @Enumerated(EnumType.STRING)
-  private Role role;
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-  @Column(name = "gender", nullable = false)
-  @Enumerated(EnumType.STRING)
-  @Comment("성별")
-  private Gender gender;
+    @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Comment("성별")
+    private Gender gender;
 
-  @Column(name = "type", nullable = false)
-  @Enumerated(EnumType.STRING)
-  @Comment("유형(일반 or 성인)")
-  private UserType type;
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Comment("유형(일반 or 성인)")
+    private UserType type;
 
-  @Column(name = "adult_webtoon_view_count", nullable = false)
-  @ColumnDefault("0")
-  @Comment("성인 작품 조회 수")
-  private Long adultWebtoonViewCount;
+    @Column(name = "adult_webtoon_view_count", nullable = false)
+    @ColumnDefault("0")
+    @Comment("성인 작품 조회 수")
+    private Long adultWebtoonViewCount;
 
 
-  public static UserEntity of(SignUpRequest signUpRequest, String password) {
-    return UserEntity.builder()
-        .name(signUpRequest.name())
-        .email(signUpRequest.email())
-        .password(password)
-        .role(signUpRequest.role())
-        .gender(signUpRequest.gender())
-        .type(signUpRequest.type())
-        .adultWebtoonViewCount(0L)
-        .build();
-  }
+    public static UserEntity of(SignUpRequest signUpRequest, String password) {
+        return UserEntity.builder()
+            .name(signUpRequest.name())
+            .email(signUpRequest.email())
+            .password(password)
+            .role(signUpRequest.role())
+            .gender(signUpRequest.gender())
+            .type(signUpRequest.type())
+            .adultWebtoonViewCount(0L)
+            .build();
+    }
 
-  public void increaseAdultWebtoonViewCount() {
-    this.adultWebtoonViewCount++;
-  }
+    public void increaseAdultWebtoonViewCount() {
+        this.adultWebtoonViewCount++;
+    }
 
-  // 웹툰 접근 권한이 있는지 체크
-  public boolean canAccessWebtoon(WebtoonEntity webtoon) {
-    // 성인 웹툰이 아닌 일반 웹툰이면 모두 접근 가능
-    // 성인 웹툰인 경우, 성인만 접근 가능하다.
-    return switch (webtoon.getRatingType()) {
-      case NORMAL -> true;
-      case ADULT -> this.type == UserType.ADULT;
-    };
-  }
+    // 웹툰 접근 권한이 있는지 체크
+    public boolean canAccessWebtoon(WebtoonEntity webtoon) {
+        // 성인 웹툰이 아닌 일반 웹툰이면 모두 접근 가능
+        // 성인 웹툰인 경우, 성인만 접근 가능하다.
+        return switch (webtoon.getRatingType()) {
+            case NORMAL -> true;
+            case ADULT -> this.type == UserType.ADULT;
+        };
+    }
 
-  public boolean cannotAccessWebtoon(WebtoonEntity webtoon) {
-    return !canAccessWebtoon(webtoon);
-  }
+    public boolean cannotAccessWebtoon(WebtoonEntity webtoon) {
+        return !canAccessWebtoon(webtoon);
+    }
 
 }

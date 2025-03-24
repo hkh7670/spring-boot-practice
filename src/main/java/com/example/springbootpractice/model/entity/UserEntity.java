@@ -1,7 +1,5 @@
 package com.example.springbootpractice.model.entity;
 
-import static com.example.springbootpractice.model.enums.WebtoonRatingType.NORMAL;
-
 import com.example.springbootpractice.model.dto.SignUpRequest;
 import com.example.springbootpractice.model.enums.Gender;
 import com.example.springbootpractice.model.enums.Role;
@@ -24,11 +22,11 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "USER_INFO",
+@Table(name = "user_info",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "USER_INFO_EMAIL_UNIQUE",
-            columnNames = ("EMAIL")
+            name = "user_info_email_unique",
+            columnNames = ("email")
         )
     })
 @Comment("유저 정보 테이블")
@@ -42,33 +40,33 @@ public class UserEntity extends BaseTimeEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long seq;
 
-  @Column(name = "NAME", nullable = false)
+  @Column(name = "name", nullable = false)
   @Comment("유저 이름")
   private String name;
 
-  @Column(name = "EMAIL", nullable = false)
+  @Column(name = "email", nullable = false)
   @Comment("유저 이메일")
   private String email;
 
-  @Column(name = "PASSWORD", nullable = false)
+  @Column(name = "password", nullable = false)
   @Comment("패스워드")
   private String password;
 
-  @Column(name = "ROLE", nullable = false)
+  @Column(name = "role", nullable = false)
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @Column(name = "GENDER", nullable = false)
+  @Column(name = "gender", nullable = false)
   @Enumerated(EnumType.STRING)
   @Comment("성별")
   private Gender gender;
 
-  @Column(name = "TYPE", nullable = false)
+  @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
   @Comment("유형(일반 or 성인)")
   private UserType type;
 
-  @Column(name = "ADULT_WEBTOON_VIEW_COUNT", nullable = false)
+  @Column(name = "adult_webtoon_view_count", nullable = false)
   @ColumnDefault("0")
   @Comment("성인 작품 조회 수")
   private Long adultWebtoonViewCount;
@@ -90,12 +88,18 @@ public class UserEntity extends BaseTimeEntity {
     this.adultWebtoonViewCount++;
   }
 
-  // 일반 회원이 성인 웹툰을 조회할 수 있는지 체크
-  public boolean cannotViewAdultWebtoon(WebtoonEntity webtoon) {
-    if (webtoon.getRatingType() == NORMAL) {
-      return false;
-    }
-    return this.type == UserType.NORMAL;
+  // 웹툰 접근 권한이 있는지 체크
+  public boolean canAccessWebtoon(WebtoonEntity webtoon) {
+    // 성인 웹툰이 아닌 일반 웹툰이면 모두 접근 가능
+    // 성인 웹툰인 경우, 성인만 접근 가능하다.
+    return switch (webtoon.getRatingType()) {
+      case NORMAL -> true;
+      case ADULT -> this.type == UserType.ADULT;
+    };
+  }
+
+  public boolean cannotAccessWebtoon(WebtoonEntity webtoon) {
+    return !canAccessWebtoon(webtoon);
   }
 
 }

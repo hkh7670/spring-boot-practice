@@ -13,7 +13,6 @@ import com.example.springbootpractice.model.entity.UserEntity;
 import com.example.springbootpractice.model.entity.WebtoonEntity;
 import com.example.springbootpractice.model.entity.WebtoonEvaluationEntity;
 import com.example.springbootpractice.model.entity.WebtoonViewHistoryEntity;
-import com.example.springbootpractice.model.enums.UserType;
 import com.example.springbootpractice.model.enums.WebtoonEvaluationType;
 import com.example.springbootpractice.model.enums.WebtoonRatingType;
 import com.example.springbootpractice.repository.WebtoonEvaluationRepository;
@@ -44,9 +43,8 @@ public class WebtoonService {
     WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
 
-    // 성인이 아닌 유저가 성인 웹툰 작품을 평가하려고 하는 경우 에러 처리
-    if (UserType.NORMAL.equals(user.getType())
-        && WebtoonRatingType.ADULT.equals(webtoon.getRatingType())) {
+    // 웹툰 접근 권한 체크
+    if (user.cannotAccessWebtoon(webtoon)) {
       throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_TYPE_FOR_WEBTOON);
     }
 
@@ -82,8 +80,8 @@ public class WebtoonService {
 
     UserEntity user = userService.getUser(SecurityUtil.getCurrentUserEmail());
 
-    // 일반 회원이 성인 웹툰을 조회하려고 하는 경우 에러 처리
-    if (user.cannotViewAdultWebtoon(webtoon)) {
+    // 웹툰 접근 권한 체크
+    if (user.cannotAccessWebtoon(webtoon)) {
       throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_TYPE_FOR_WEBTOON);
     }
 

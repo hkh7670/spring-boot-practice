@@ -36,7 +36,9 @@ public class UserController {
      * @param request
      */
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> requestSignUp(@RequestBody @Valid SignUpRequest request) {
+    public ResponseEntity<SignUpResponse> requestSignUp(
+        @RequestBody @Valid SignUpRequest request
+    ) {
         log.info("회원가입 요청: {}", request.toString());
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -51,7 +53,8 @@ public class UserController {
      */
     @PostMapping("/login")
     public LogInResponse requestLogIn(
-        @RequestBody @Valid LogInRequest request) {
+        @RequestBody @Valid LogInRequest request
+    ) {
         return new LogInResponse(userService.getJwtToken(request));
     }
 
@@ -71,7 +74,8 @@ public class UserController {
      */
     @GetMapping("/adult-webtoon-view")
     public Page<AdultWebtoonViewersResponse> requestAdultWebtoonViewers(
-        @ModelAttribute PagingRequest request) {
+        @ModelAttribute PagingRequest request
+    ) {
         return userService.getAdultWebtoonViewers(
             LocalDateTime.now().minusDays(7),
             LocalDateTime.now(),

@@ -33,8 +33,10 @@ public class WebtoonController {
      * @param request
      */
     @PostMapping("/{webtoonSeq}/evaluation")
-    public void requestEvaluation(@PathVariable Long webtoonSeq,
-        @RequestBody @Valid WebtoonEvaluationRequest request) {
+    public void requestEvaluation(
+        @PathVariable Long webtoonSeq,
+        @RequestBody @Valid WebtoonEvaluationRequest request
+    ) {
         webtoonService.createWebtoonEvaluationInfo(webtoonSeq, request);
     }
 
@@ -68,8 +70,10 @@ public class WebtoonController {
      * @return
      */
     @GetMapping("/{webtoonSeq}/view-history")
-    public Page<WebtoonViewHistoryResponse> requestWebtoonViewHistory(@PathVariable Long webtoonSeq,
-        @ModelAttribute PagingRequest request) {
+    public Page<WebtoonViewHistoryResponse> requestWebtoonViewHistory(
+        @PathVariable Long webtoonSeq,
+        @ModelAttribute PagingRequest request
+    ) {
         return webtoonService.getWebtoonViewHistory(webtoonSeq, request.toPageable("seq"));
     }
 
@@ -80,8 +84,10 @@ public class WebtoonController {
      * @param request
      */
     @PutMapping("/{webtoonSeq}/coin")
-    public void requestUpdateWebtoonCoin(@PathVariable Long webtoonSeq,
-        @RequestBody @Valid UpdateWebtoonCoinRequest request) {
+    public void requestUpdateWebtoonCoin(
+        @PathVariable Long webtoonSeq,
+        @RequestBody @Valid UpdateWebtoonCoinRequest request
+    ) {
         webtoonService.updateWebtoonCoin(webtoonSeq, request);
     }
 

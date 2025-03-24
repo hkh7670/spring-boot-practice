@@ -24,11 +24,11 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "user_info",
+@Table(name = "USER_INFO",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "user_info_email_unique",
-            columnNames = ("email")
+            name = "USER_INFO_EMAIL_UNIQUE",
+            columnNames = ("EMAIL")
         )
     })
 @Comment("유저 정보 테이블")
@@ -42,33 +42,33 @@ public class UserEntity extends BaseTimeEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long seq;
 
-  @Column(name = "name", nullable = false)
+  @Column(name = "NAME", nullable = false)
   @Comment("유저 이름")
   private String name;
 
-  @Column(name = "email", nullable = false)
+  @Column(name = "EMAIL", nullable = false)
   @Comment("유저 이메일")
   private String email;
 
-  @Column(name = "password", nullable = false)
+  @Column(name = "PASSWORD", nullable = false)
   @Comment("패스워드")
   private String password;
 
-  @Column(name = "role", nullable = false)
+  @Column(name = "ROLE", nullable = false)
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @Column(name = "gender", nullable = false)
+  @Column(name = "GENDER", nullable = false)
   @Enumerated(EnumType.STRING)
   @Comment("성별")
   private Gender gender;
 
-  @Column(name = "type", nullable = false)
+  @Column(name = "TYPE", nullable = false)
   @Enumerated(EnumType.STRING)
   @Comment("유형(일반 or 성인)")
   private UserType type;
 
-  @Column(name = "adult webtoon view count", nullable = false)
+  @Column(name = "ADULT_WEBTOON_VIEW_COUNT", nullable = false)
   @ColumnDefault("0")
   @Comment("성인 작품 조회 수")
   private Long adultWebtoonViewCount;

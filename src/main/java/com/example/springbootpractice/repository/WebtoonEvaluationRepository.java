@@ -11,7 +11,7 @@ public interface WebtoonEvaluationRepository extends JpaRepository<WebtoonEvalua
     WebtoonEvaluationCustomRepository {
 
   @Modifying
-  @Query("delete from WebtoonEvaluationEntity wv where wv.userSeq = :userSeq")
+  @Query("delete from WebtoonEvaluationEntity we where we.userSeq = :userSeq")
   void deleteByUserSeq(long userSeq);
 
   boolean existsByUserSeqAndWebtoonSeq(long userSeq, long webtoonSeq);

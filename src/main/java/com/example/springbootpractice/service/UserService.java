@@ -72,7 +72,7 @@ public class UserService {
     // 웹툰 평가 내역 삭제
     webtoonEvaluationRepository.deleteByUserSeq(userSeq);
     // 유저 삭제
-    userRepository.deleteById(userSeq);
+    userRepository.delete(user);
   }
 
   @Transactional(readOnly = true)

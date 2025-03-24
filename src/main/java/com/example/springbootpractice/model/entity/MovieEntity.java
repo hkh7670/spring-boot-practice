@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "MOVIE")
+@Table(name = "movie")
 @Comment("영화 정보 테이블")
 @Getter
 @AllArgsConstructor
@@ -28,47 +28,47 @@ public class MovieEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "TITLE", nullable = false)
+    @Column(name = "title", nullable = false)
     @Comment("영화 제목")
     private String title;
 
-    @Column(name = "OVERVIEW", nullable = false, length = 500)
+    @Column(name = "overview", nullable = false, length = 500)
     @Comment("요약")
     private String overview;
 
-    @Column(name = "ORIGINAL_TITLE", nullable = false)
+    @Column(name = "original_title", nullable = false)
     @Comment("원 제목")
     private String originalTitle;
 
-    @Column(name = "ORIGINAL_LANGUAGE", nullable = false)
+    @Column(name = "original_language", nullable = false)
     @Comment("언어")
     private String originalLanguage;
 
-    @Column(name = "VOTE_COUNT", nullable = false)
+    @Column(name = "vote_count", nullable = false)
     private Long voteCount;
 
-    @Column(name = "VOTE_AVERAGE", nullable = false)
+    @Column(name = "vote_average", nullable = false)
     private Double voteAverage;
 
-    @Column(name = "POPULARITY", nullable = false)
+    @Column(name = "popularity", nullable = false)
     private Double popularity;
 
-    @Column(name = "POSTER_PATH", nullable = false)
+    @Column(name = "poster_path", nullable = false)
     private String posterPath;
 
-    @Column(name = "RELEASE_DATE", nullable = false)
+    @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(name = "VIDEO", nullable = false)
+    @Column(name = "video", nullable = false)
     private Boolean video;
 
-    @Column(name = "ADULT", nullable = false)
+    @Column(name = "adult", nullable = false)
     private Boolean adult;
 
-    @Column(name = "BACKDROP_PATH", nullable = false)
+    @Column(name = "backdrop_path", nullable = false)
     private String backdropPath;
 
-    @Column(name = "PAGE", nullable = false)
+    @Column(name = "page", nullable = false)
     private long page;
 
     public static MovieEntity from(PopularMovieInfo info) {

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "WEBTOON_VIEW_HISTORY_INFO")
+@Table(name = "webtoon_view_history_info")
 @Comment("웹툰 조회 내역 정보 테이블")
 @Getter
 @AllArgsConstructor
@@ -29,11 +29,11 @@ public class WebtoonViewHistoryEntity extends BaseTimeEntity {
     private Long seq;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_SEQ")
+    @JoinColumn(name = "user_seq")
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "WEBTOON_SEQ")
+    @JoinColumn(name = "webtoon_seq")
     private WebtoonEntity webtoon;
 
     public static WebtoonViewHistoryEntity of(UserEntity user, WebtoonEntity webtoon) {

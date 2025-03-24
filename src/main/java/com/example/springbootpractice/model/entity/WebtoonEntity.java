@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "WEBTOON_INFO")
+@Table(name = "webtoon_info")
 @Comment("웹툰 작품 정보 테이블")
 @Getter
 @AllArgsConstructor
@@ -30,7 +30,7 @@ public class WebtoonEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "name", nullable = false)
     @Comment("작품명")
     private String name;
 
@@ -38,15 +38,15 @@ public class WebtoonEntity extends BaseTimeEntity {
     @Comment("작가")
     private String author;
 
-    @Column(name = "COIN", nullable = false)
+    @Column(name = "coin", nullable = false)
     @Comment("금액")
     private Long coin;
 
-    @Column(name = "OPEN_DATE", nullable = false, columnDefinition = "TIMESTAMP(6)")
+    @Column(name = "open_date", nullable = false, columnDefinition = "TIMESTAMP(6)")
     @Comment("서비스 제공일")
     private LocalDateTime openDate;
 
-    @Column(name = "RATING_TYPE", nullable = false)
+    @Column(name = "rating_type", nullable = false)
     @Enumerated(EnumType.STRING)
     @Comment("웹툰 등급 (일반 or 성인물)")
     private WebtoonRatingType ratingType;

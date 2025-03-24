@@ -22,11 +22,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 @Entity
-@Table(name = "WEBTOON_EVALUATION_INFO",
+@Table(name = "webtoon_evaluation_info",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "WEBTOON_EVALUATION_INFO_USER_SEQ_WEBTOON_SEQ_UNIQUE_KEY",
-            columnNames = {"USER_SEQ", "WEBTOON_SEQ"}
+            name = "webtoon_evaluation_info_user_seq_webtoon_seq_unique_key",
+            columnNames = {"user_seq", "webtoon_seq"}
         )
     })
 @Comment("웹툰 작품 평가 정보 테이블")
@@ -40,21 +40,21 @@ public class WebtoonEvaluationEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
-    @Column(name = "USER_SEQ", nullable = false)
+    @Column(name = "user_seq", nullable = false)
     @Comment("유저 seq")
     private Long userSeq;
 
-    @Column(name = "EVALUATION_TYPE", nullable = false)
+    @Column(name = "evaluation_type", nullable = false)
     @Enumerated(EnumType.STRING)
     @Comment("작품 평가 타입")
     private WebtoonEvaluationType evaluationType;
 
-    @Column(name = "COMMENT")
+    @Column(name = "comment")
     @Comment("코멘트")
     private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "WEBTOON_SEQ")
+    @JoinColumn(name = "webtoon_seq")
     private WebtoonEntity webtoon;
 
 

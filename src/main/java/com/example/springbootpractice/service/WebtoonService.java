@@ -31,15 +31,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class WebtoonService {
 
-  private final UserService userService;
   private final WebtoonEvaluationRepository webtoonEvaluationRepository;
   private final WebtoonRepository webtoonRepository;
   private final WebtoonViewHistoryRepository webtoonViewHistoryRepository;
 
 
   @Transactional
-  public void createWebtoonEvaluationInfo(long webtoonSeq, WebtoonEvaluationRequest request) {
-    UserEntity user = userService.getUser(SecurityUtil.getCurrentUserEmail());
+  public void createWebtoonEvaluationInfo(
+      long webtoonSeq,
+      WebtoonEvaluationRequest request
+  ) {
+    UserEntity user = SecurityUtil.getCurrentUser();
     WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
 
@@ -77,8 +79,7 @@ public class WebtoonService {
   public WebtoonResponse getWebtoon(long webtoonSeq) {
     WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-
-    UserEntity user = userService.getUser(SecurityUtil.getCurrentUserEmail());
+    UserEntity user = SecurityUtil.getCurrentUser();
 
     // 웹툰 접근 권한 체크
     if (user.cannotAccessWebtoon(webtoon)) {
@@ -112,5 +113,16 @@ public class WebtoonService {
     WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
     webtoon.updateCoin(request.coin());
+  }
+
+  /**
+   * 웹툰 조회 내역, 웹툰 평가 내역 삭제
+   */
+  @Transactional
+  public void deleteWebtoonHistories(UserEntity user) {
+    // 웹툰 조회 내역 삭제
+    webtoonViewHistoryRepository.deleteByUser(user);
+    // 웹툰 평가 내역 삭제
+    webtoonEvaluationRepository.deleteByUserSeq(user.getSeq());
   }
 }

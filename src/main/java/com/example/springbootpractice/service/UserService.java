@@ -26,9 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
-  private final WebtoonEvaluationRepository webtoonEvaluationRepository;
-  private final WebtoonViewHistoryRepository webtoonViewHistoryRepository;
-
+  private final WebtoonService webtoonService;
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
 
@@ -63,16 +61,11 @@ public class UserService {
 
   @Transactional
   public void deleteMyself() {
-    UserEntity user = userRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
-    long userSeq = user.getSeq();
-
-    // 웹툰 조회 내역 삭제
-    webtoonViewHistoryRepository.deleteByUser(user);
-    // 웹툰 평가 내역 삭제
-    webtoonEvaluationRepository.deleteByUserSeq(userSeq);
+    UserEntity user = SecurityUtil.getCurrentUser();
+    // 웹툰 조회 내역, 웹툰 평가 내역 삭제
+    webtoonService.deleteWebtoonHistories(user);
     // 유저 삭제
-    userRepository.delete(user);
+    userRepository.deleteByUserSeq(user.getSeq());
   }
 
   @Transactional(readOnly = true)

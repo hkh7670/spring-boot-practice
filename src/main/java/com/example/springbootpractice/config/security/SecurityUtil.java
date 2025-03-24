@@ -22,18 +22,18 @@ public class SecurityUtil {
     return authentication;
   }
 
-  public static String getCurrentUserName() {
+  public static UserEntity getCurrentUser() {
     Authentication authentication = getAuthentication();
     SecurityUser springSecurityUser = (SecurityUser) authentication.getPrincipal();
-    UserEntity user = springSecurityUser.getUser();
-    return user.getName();
+    return springSecurityUser.getUser();
+  }
+
+  public static String getCurrentUserName() {
+    return getCurrentUser().getName();
   }
 
   public static String getCurrentUserEmail() {
-    Authentication authentication = getAuthentication();
-    SecurityUser springSecurityUser = (SecurityUser) authentication.getPrincipal();
-    UserEntity user = springSecurityUser.getUser();
-    return user.getEmail();
+    return getCurrentUser().getEmail();
   }
 
 }

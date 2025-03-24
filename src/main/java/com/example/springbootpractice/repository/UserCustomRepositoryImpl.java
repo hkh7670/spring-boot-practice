@@ -9,6 +9,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -47,19 +48,26 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             .limit(pageable.getPageSize())
             .fetch();
 
-        long total = jpaQueryFactory
-            .select(
-                user.count()
-            )
-            .from(viewHistory)
-            .innerJoin(viewHistory.user, user)
-            .innerJoin(viewHistory.webtoon, webtoon)
-            .where(webtoon.ratingType.eq(WebtoonRatingType.ADULT),
-                user.regDate.between(from, to))
-            .groupBy(user.seq)
-            .having(viewHistory.count().goe(3))
-            .fetchOne();
-        return new PageImpl<>(result, pageable, total);
+        long totalCount = Objects.requireNonNullElse(
+            jpaQueryFactory
+                .select(
+                    user.count()
+                )
+                .from(viewHistory)
+                .innerJoin(viewHistory.user, user)
+                .innerJoin(viewHistory.webtoon, webtoon)
+                .where(webtoon.ratingType.eq(WebtoonRatingType.ADULT),
+                    user.regDate.between(from, to))
+                .groupBy(user.seq)
+                .having(viewHistory.count().goe(3))
+                .fetchOne(),
+            0L
+        );
 
+        return new PageImpl<>(
+            result,
+            pageable,
+            totalCount
+        );
     }
 }

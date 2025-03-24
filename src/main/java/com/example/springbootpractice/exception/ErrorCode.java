@@ -15,7 +15,7 @@ public enum ErrorCode {
   NOT_FOUND_USER(HttpStatus.NOT_FOUND, "유저정보를 찾을 수 없습니다."),
   NOT_FOUND_WEBTOON_INFO(HttpStatus.NOT_FOUND, "웹툰 작품정보를 찾을 수 없습니다."),
   NOT_ALLOWED_USER_FOR_SIGN_UP(HttpStatus.BAD_REQUEST, "가입이 허용 되지 않은 사용자 입니다."),
-  NOT_ALLOWED_USER_TYPE_FOR_WEBTOON(HttpStatus.FORBIDDEN, "해당 웹툰에 대한 접근 권한이 없습니다."),
+  NOT_ALLOWED_USER_FOR_WEBTOON(HttpStatus.FORBIDDEN, "해당 웹툰에 대한 접근 권한이 없습니다."),
   DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
   ALREADY_EXIST_WEBTOON_EVALUATION_INFO(HttpStatus.BAD_REQUEST, "작품 평가정보가 이미 존재합니다."),
   INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다."),

@@ -45,7 +45,7 @@ public class WebtoonService {
 
     // 웹툰 접근 권한 체크
     if (user.cannotAccessWebtoon(webtoon)) {
-      throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_TYPE_FOR_WEBTOON);
+      throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_FOR_WEBTOON);
     }
 
     // 유저가 이미 평가 정보를 입력한 경우 에러 처리
@@ -82,7 +82,7 @@ public class WebtoonService {
 
     // 웹툰 접근 권한 체크
     if (user.cannotAccessWebtoon(webtoon)) {
-      throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_TYPE_FOR_WEBTOON);
+      throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_FOR_WEBTOON);
     }
 
     // 웹툰 조회 내역 저장

@@ -49,13 +49,10 @@ public class UserService {
 
   @Transactional(readOnly = true)
   public String getJwtToken(LogInRequest request) {
-    UserEntity user = userRepository.findByEmail(request.email())
-        .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
-
+    UserEntity user = getUser(request.email());
     if (!passwordEncoder.matches(request.password(), user.getPassword())) {
       throw new ApiErrorException(ErrorCode.INCORRECT_PASSWORD);
     }
-
     return jwtTokenProvider.createToken(user.getEmail(), user.getRole());
   }
 

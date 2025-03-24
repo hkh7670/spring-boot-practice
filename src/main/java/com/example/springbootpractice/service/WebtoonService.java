@@ -15,6 +15,7 @@ import com.example.springbootpractice.model.entity.WebtoonEvaluationEntity;
 import com.example.springbootpractice.model.entity.WebtoonViewHistoryEntity;
 import com.example.springbootpractice.model.enums.WebtoonEvaluationType;
 import com.example.springbootpractice.model.enums.WebtoonRatingType;
+import com.example.springbootpractice.repository.UserRepository;
 import com.example.springbootpractice.repository.WebtoonEvaluationRepository;
 import com.example.springbootpractice.repository.WebtoonRepository;
 import com.example.springbootpractice.repository.WebtoonViewHistoryRepository;
@@ -34,6 +35,7 @@ public class WebtoonService {
   private final WebtoonEvaluationRepository webtoonEvaluationRepository;
   private final WebtoonRepository webtoonRepository;
   private final WebtoonViewHistoryRepository webtoonViewHistoryRepository;
+  private final UserRepository userRepository;
 
 
   @Transactional
@@ -56,7 +58,8 @@ public class WebtoonService {
     }
 
     webtoonEvaluationRepository.save(
-        WebtoonEvaluationEntity.of(webtoon, user.getSeq(), request));
+        WebtoonEvaluationEntity.of(webtoon, user.getSeq(), request)
+    );
   }
 
   @Transactional(readOnly = true)
@@ -79,7 +82,8 @@ public class WebtoonService {
   public WebtoonResponse getWebtoon(long webtoonSeq) {
     WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-    UserEntity user = SecurityUtil.getCurrentUser();
+    UserEntity user = userRepository.findById(SecurityUtil.getCurrentUserSeq())
+            .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
 
     // 웹툰 접근 권한 체크
     if (user.cannotAccessWebtoon(webtoon)) {

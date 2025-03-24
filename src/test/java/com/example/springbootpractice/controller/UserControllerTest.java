@@ -135,7 +135,7 @@ class UserControllerTest {
 
     // 탈퇴 회원 조회 시 NOT_FOUND_USER exception 발생
     assertThrows(ApiErrorException.class, () ->
-        userService.getUser("ghhan@abc.com"));
+        userService.getUserByEmail("ghhan@abc.com"));
   }
 
 }

@@ -36,4 +36,8 @@ public class SecurityUtil {
     return getCurrentUser().getEmail();
   }
 
+  public static long getCurrentUserSeq() {
+    return getCurrentUser().getSeq();
+  }
+
 }

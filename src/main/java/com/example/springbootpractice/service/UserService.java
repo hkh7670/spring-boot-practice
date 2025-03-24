@@ -9,8 +9,6 @@ import com.example.springbootpractice.model.dto.LogInRequest;
 import com.example.springbootpractice.model.dto.SignUpRequest;
 import com.example.springbootpractice.model.entity.UserEntity;
 import com.example.springbootpractice.repository.UserRepository;
-import com.example.springbootpractice.repository.WebtoonEvaluationRepository;
-import com.example.springbootpractice.repository.WebtoonViewHistoryRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +30,7 @@ public class UserService {
 
 
   @Transactional(readOnly = true)
-  public UserEntity getUser(String email) {
+  public UserEntity getUserByEmail(String email) {
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
   }
@@ -49,7 +47,7 @@ public class UserService {
 
   @Transactional(readOnly = true)
   public String getJwtToken(LogInRequest request) {
-    UserEntity user = getUser(request.email());
+    UserEntity user = getUserByEmail(request.email());
     if (!passwordEncoder.matches(request.password(), user.getPassword())) {
       throw new ApiErrorException(ErrorCode.INCORRECT_PASSWORD);
     }

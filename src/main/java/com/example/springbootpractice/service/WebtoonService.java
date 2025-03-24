@@ -82,9 +82,8 @@ public class WebtoonService {
 
     UserEntity user = userService.getUser(SecurityUtil.getCurrentUserEmail());
 
-    // 일반 회원이 성인 작품을 조회하려고 하는 경우 에러 처리
-    if (UserType.NORMAL.equals(user.getType())
-        && WebtoonRatingType.ADULT.equals(webtoon.getRatingType())) {
+    // 일반 회원이 성인 웹툰을 조회하려고 하는 경우 에러 처리
+    if (user.cannotViewAdultWebtoon(webtoon)) {
       throw new ApiErrorException(ErrorCode.NOT_ALLOWED_USER_TYPE_FOR_WEBTOON);
     }
 

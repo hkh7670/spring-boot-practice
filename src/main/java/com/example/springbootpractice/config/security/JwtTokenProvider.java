@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,8 +27,10 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     public JwtTokenProvider(
-        @Value("${jwt.secret}") String secretKey,
-        @Value("${jwt.expiration_time}") long accessTokenExpTime,
+        @Value("${jwt.secret}")
+        String secretKey,
+        @Value("${jwt.expiration_time}")
+        long accessTokenExpTime,
         UserDetailsService userDetailsService
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -73,7 +76,7 @@ public class JwtTokenProvider {
 
     // Request의 Header에서 token 값을 가져옵니다.
     public String getAuthorizationHeaderValue(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+        return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
     // 토큰의 유효성 + 만료일자 확인

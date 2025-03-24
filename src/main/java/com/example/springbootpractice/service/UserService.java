@@ -29,7 +29,6 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
 
 
-  @Transactional(readOnly = true)
   public UserEntity getUserByEmail(String email) {
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));

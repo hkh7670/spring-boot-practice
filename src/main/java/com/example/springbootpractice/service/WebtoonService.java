@@ -102,14 +102,14 @@ public class WebtoonService {
   }
 
   @Transactional(readOnly = true)
-  public Page<WebtoonViewHistoryResponse> getWebtoonViewHistory(long webtoonSeq,
-      Pageable pageable) {
+  public Page<WebtoonViewHistoryResponse> getWebtoonViewHistory(
+      long webtoonSeq,
+      Pageable pageable
+  ) {
     WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
         .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-
-    Page<WebtoonViewHistoryEntity> page =
-        webtoonViewHistoryRepository.findWebtoonViewHistory(webtoon, pageable);
-    return page.map(WebtoonViewHistoryResponse::from);
+    return webtoonViewHistoryRepository.findWebtoonViewHistory(webtoon, pageable)
+        .map(WebtoonViewHistoryResponse::from);
   }
 
   @Transactional

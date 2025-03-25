@@ -31,8 +31,10 @@ public class SpringBootPracticeApplication {
     private static Set<String> getImportList(Environment environment) {
         Set<String> importList = new HashSet<>();
         int index = 0;
+        String format = "spring.config.import[%d]";
+
         while (true) {
-            String key = "spring.config.import" + "[" + index++ + "]";
+            String key = String.format(format, index++);
             String[] configFileNameArray = environment.getProperty(key, String[].class);
 
             // import한 config 파일이 더이상 없을 경우 종료

@@ -31,15 +31,23 @@ public class WebtoonEvaluationCustomRepositoryImpl implements WebtoonEvaluationC
                 )
             )
             .from(webtoonEvaluation)
-            .innerJoin(webtoonEvaluation.webtoon, webtoon)
+            .innerJoin(
+                webtoonEvaluation.webtoon,
+                webtoon
+            )
             .where(webtoonEvaluation.evaluationType.eq(evaluationType))
-            .groupBy(webtoon.seq,
+            .groupBy(
+                webtoon.seq,
                 webtoon.name,
                 webtoon.author,
                 webtoon.ratingType,
                 webtoon.coin,
-                webtoon.openDate)
-            .orderBy(webtoonEvaluation.count().desc(), webtoon.name.asc())
+                webtoon.openDate
+            )
+            .orderBy(
+                webtoonEvaluation.count().desc(),
+                webtoon.name.asc()
+            )
             .limit(3)
             .fetch();
     }

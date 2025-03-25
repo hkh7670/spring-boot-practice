@@ -1,6 +1,6 @@
 spring:
-  profiles:
-    active: mysql
+#  profiles:
+#    active: local
   application:
     name: spring-boot-practice
   jpa:
@@ -19,7 +19,10 @@ spring:
     init:
       mode: always
   config:
-    import: secret.yml
+    import:
+      - secret.yml
+      - h2.yml
+
 springdoc:
   swagger-ui:
     groups-order: DESC

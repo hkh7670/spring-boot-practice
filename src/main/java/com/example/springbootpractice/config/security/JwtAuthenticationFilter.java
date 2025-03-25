@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             String token = jwtTokenProvider.getToken(authorizationHeaderValue);
+            // 토큰 유효성 검사
             if (jwtTokenProvider.isNotValidToken(token)) {
                 return;
             }

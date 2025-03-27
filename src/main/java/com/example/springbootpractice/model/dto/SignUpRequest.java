@@ -40,12 +40,12 @@ public record SignUpRequest(
     public String toString() {
         return """
             SignUpRequest{
-                "name": "%s",
-                "email": "%s",
-                "password": "%s",
-                "role": "%s",
-                "gender": "%s",
-                "type": "%s"
+              "name": "%s",
+              "email": "%s",
+              "password": "%s",
+              "role": "%s",
+              "gender": "%s",
+              "type": "%s"
             }
             """.formatted(name, email, getMaskedData(password), role, gender, type);
     }

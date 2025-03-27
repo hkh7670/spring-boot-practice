@@ -1,6 +1,6 @@
 package com.example.springbootpractice.config.security;
 
-import static com.example.springbootpractice.util.CommonConstant.REQUEST_ID_HEADER;
+import static com.example.springbootpractice.util.CommonConstants.REQUEST_ID_HEADER;
 
 import com.example.springbootpractice.exception.ErrorCode;
 import com.example.springbootpractice.exception.ErrorResponse;

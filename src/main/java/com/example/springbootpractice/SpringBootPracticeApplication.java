@@ -24,8 +24,7 @@ public class SpringBootPracticeApplication {
 
         Environment environment = context.getEnvironment();
         Set<String> importList = getImportList(environment);
-        log.info("===== spring.config.import 값 =====");
-        log.info(importList.toString());
+        log.info("===== spring.config.import 값 : {}", importList);
     }
 
     private static Set<String> getImportList(Environment environment) {

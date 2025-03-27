@@ -1,5 +1,7 @@
 package com.example.springbootpractice.model.dto;
 
+import static com.example.springbootpractice.util.CustomStringUtils.getMaskedData;
+
 import com.example.springbootpractice.model.enums.Gender;
 import com.example.springbootpractice.model.enums.Role;
 import com.example.springbootpractice.model.enums.UserType;
@@ -36,13 +38,15 @@ public record SignUpRequest(
 
     @Override
     public String toString() {
-        return "SignUpRequest{" +
-            "name='" + name + '\'' +
-            ", email='" + email + '\'' +
-            ", password='" + password + '\'' +
-            ", role=" + role +
-            ", gender=" + gender +
-            ", type=" + type +
-            '}';
+        return """
+            SignUpRequest{
+                "name": "%s",
+                "email": "%s",
+                "password": "%s",
+                "role": "%s",
+                "gender": "%s",
+                "type": "%s"
+            }
+            """.formatted(name, email, getMaskedData(password), role, gender, type);
     }
 }

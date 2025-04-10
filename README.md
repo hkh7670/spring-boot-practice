@@ -2,7 +2,7 @@
 
 - 사용 기술
   - Java 21
-  - Spring Boot 3.3.2
+  - Spring Boot 3.4.4
   - Spring Security
   - Gradle 8.6
   - Spring Data JPA

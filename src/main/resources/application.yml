@@ -22,6 +22,9 @@ spring:
     import:
       - secret.yml
       - h2.yml
+  threads:
+    virtual:
+      enabled: true
 
 springdoc:
   swagger-ui:

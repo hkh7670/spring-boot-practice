@@ -24,8 +24,11 @@ import org.springframework.stereotype.Component;
 public class RequestIdFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
+    public void doFilter(
+        ServletRequest request,
+        ServletResponse response,
+        FilterChain chain
+    ) throws IOException, ServletException {
         long startTime = System.currentTimeMillis(); // 요청 시작 시간
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
@@ -34,9 +37,10 @@ public class RequestIdFilter implements Filter {
         if (hasNotText(requestId)) {
             requestId = CommonUtils.getRequestId();
         }
-        String threadId = Thread.currentThread().isVirtual()
-            ? "virtual-thread-" + Thread.currentThread().threadId()
-            : Thread.currentThread().getName();
+        Thread thread = Thread.currentThread();
+        String threadId = thread.isVirtual()
+            ? "virtual-thread-" + thread.threadId()
+            : thread.getName();
 
         String method = httpServletRequest.getMethod();
         String uri = httpServletRequest.getRequestURI();

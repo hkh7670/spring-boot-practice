@@ -6,7 +6,8 @@ import java.util.UUID;
 
 public class CommonUtils {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+        DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     public static String getRequestId() {
         String now = LocalDateTime.now().format(DATE_TIME_FORMATTER);

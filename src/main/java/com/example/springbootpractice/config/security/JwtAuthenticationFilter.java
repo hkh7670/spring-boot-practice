@@ -6,11 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -24,12 +26,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // 헤더에서 JWT를 받아옴
             String authorizationHeaderValue = jwtTokenProvider.getAuthorizationHeaderValue(request);
+            log.info("Authorization header: {}", authorizationHeaderValue);
             if (jwtTokenProvider.isNotBearerToken(authorizationHeaderValue)) {
+                log.info("Not bearer token");
                 return;
             }
             String token = jwtTokenProvider.getToken(authorizationHeaderValue);
+            log.info("Token: {}", token);
             // 토큰 유효성 검사
             if (jwtTokenProvider.isNotValidToken(token)) {
+                log.info("Not valid token value");
                 return;
             }
 

@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ErrorResponse {
+public class ErrorResponse<T> {
 
     private final ErrorCode errorCode;
     private final String message;
     @JsonInclude(Include.NON_EMPTY)
-    private final List<ErrorField> errorFields;
+    private final List<ErrorField<T>> errorFields;
 
     public ErrorResponse(ErrorCode errorCode) {
         this.errorCode = errorCode;
@@ -21,7 +21,7 @@ public class ErrorResponse {
         this.errorFields = null;
     }
 
-    public ErrorResponse(ErrorCode errorCode, List<ErrorField> errorFields) {
+    public ErrorResponse(ErrorCode errorCode, List<ErrorField<T>> errorFields) {
         this.errorCode = errorCode;
         this.message = errorCode.getMessage();
         this.errorFields = errorFields;

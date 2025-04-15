@@ -11,6 +11,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
+@Slf4j
 public class RequestIdFilter implements Filter {
 
     @Override
@@ -31,10 +33,17 @@ public class RequestIdFilter implements Filter {
             requestId = CommonUtils.getRequestId();
         }
 
+        long startTime = System.currentTimeMillis(); // 요청 시작 시간
+        String method = httpServletRequest.getMethod();
+        String uri = httpServletRequest.getRequestURI();
+
         try {
             MDC.put(REQUEST_ID_HEADER, requestId); // MDC에 저장하여 로그에서 활용
+            log.info("[{} {}] 요청 시작", method, uri);
             chain.doFilter(request, response);
         } finally {
+            long duration = System.currentTimeMillis() - startTime;
+            log.info("[{} {}] 요청 완료 ({} ms)", method, uri, duration);
             MDC.clear(); // 요청 종료 후 MDC 정리
         }
     }

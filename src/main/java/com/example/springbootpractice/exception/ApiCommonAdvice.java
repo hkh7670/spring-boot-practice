@@ -25,7 +25,8 @@ public class ApiCommonAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException e) {
+        MethodArgumentNotValidException e
+    ) {
         log.error(e.getMessage(), e);
         var errorFields = e.getBindingResult().getFieldErrors();
         return new ErrorResponse(ErrorCode.SCHEMA_VALIDATE_ERROR,

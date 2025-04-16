@@ -49,7 +49,6 @@ public class TMDBRestClientConfig {
     private static final String BASE_URL = "https://api.themoviedb.org/3";
     private static final int CONNECTION_TIMEOUT = 5;
     private static final int READ_TIMEOUT = 25;
-
     private static final int MAX_TOTAL_CONNECTIONS = 100;
     private static final int MAX_PER_ROUTE = 20;
 
@@ -68,7 +67,6 @@ public class TMDBRestClientConfig {
                 httpHeaders.add(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue());
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             })
-//            .requestFactory(getClientHttpRequestFactory())
             .requestFactory(getClientHttpRequestFactory())
             .defaultStatusHandler(HttpStatusCode::is4xxClientError, default4xxErrorHandler())
             .defaultStatusHandler(HttpStatusCode::is5xxServerError, default5xxErrorHandler())
@@ -78,14 +76,6 @@ public class TMDBRestClientConfig {
     private String getAuthorizationHeaderValue() {
         return "Bearer " + this.API_READ_ACCESS_TOKEN;
     }
-
-//    private ClientHttpRequestFactory getClientHttpRequestFactory() {
-//        var factory = new SimpleClientHttpRequestFactory();
-//        factory.setConnectTimeout(CONNECTION_TIMEOUT);
-//        factory.setReadTimeout(READ_TIMEOUT);
-//        return factory;
-//    }
-
 
     private ClientHttpRequestFactory getClientHttpRequestFactory() {
         return new HttpComponentsClientHttpRequestFactory(createApacheHttpClient());
@@ -98,13 +88,13 @@ public class TMDBRestClientConfig {
             .build();
 
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-        connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
+        connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS); // 전체 커넥션 수 최대값
+        connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE); // 도메인(호스트) 당 최대 커넥션 수
 
         return HttpClients.custom()
             .setConnectionManager(connectionManager)
             .setDefaultRequestConfig(requestConfig)
-            .evictIdleConnections(Timeout.ofSeconds(30))
+            .evictIdleConnections(Timeout.ofSeconds(30)) // 일정 시간 이상 유휴 커넥션 정리 (메모리 누수 방지)
             .build();
     }
 

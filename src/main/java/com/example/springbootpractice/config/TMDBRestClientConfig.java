@@ -3,6 +3,7 @@ package com.example.springbootpractice.config;
 import com.example.springbootpractice.client.TMDBRestClient;
 import com.example.springbootpractice.exception.ApiErrorException;
 import com.example.springbootpractice.exception.ErrorCode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.ResponseSpec;
@@ -75,12 +78,13 @@ public class TMDBRestClientConfig {
 
     private ResponseSpec.ErrorHandler default4xxErrorHandler() {
         return (req, res) -> {
-            var errorBody = objectMapper.readValue(res.getBody(), Map.class);
-            log.debug(errorBody.toString());
-            int statusCode = res.getStatusCode().value();
+            Map<String, Object> errorBody = getErrorBody(res);
+            HttpStatusCode statusCode = res.getStatusCode();
+            printErrorLog(statusCode, errorBody);
             switch (statusCode) {
-                case 401 -> throw new ApiErrorException(ErrorCode.AUTHENTICATION_FAIL);
-                case 404 -> throw new ApiErrorException(ErrorCode.NOT_FOUND);
+                case HttpStatus.UNAUTHORIZED ->
+                    throw new ApiErrorException(ErrorCode.AUTHENTICATION_FAIL);
+                case HttpStatus.NOT_FOUND -> throw new ApiErrorException(ErrorCode.NOT_FOUND);
                 default -> throw new ApiErrorException(ErrorCode.BAD_REQUEST);
             }
         };
@@ -88,8 +92,34 @@ public class TMDBRestClientConfig {
 
     private ResponseSpec.ErrorHandler default5xxErrorHandler() {
         return (req, res) -> {
+            Map<String, Object> errorBody = getErrorBody(res);
+            HttpStatusCode statusCode = res.getStatusCode();
+            printErrorLog(statusCode, errorBody);
             throw new ApiErrorException(ErrorCode.EXTERNAL_SERVER_ERROR);
         };
+    }
+
+    private Map<String, Object> getErrorBody(ClientHttpResponse res) {
+        Map<String, Object> errorBody;
+        try {
+            errorBody = objectMapper.readValue(
+                res.getBody(),
+                new TypeReference<>() {
+                }
+            );
+        } catch (Exception e) {
+            log.error("Failed to parse TMDBRestClient error response body", e);
+            throw new ApiErrorException(ErrorCode.EXTERNAL_SERVER_ERROR);
+        }
+        return errorBody;
+    }
+
+    private void printErrorLog(
+        HttpStatusCode statusCode,
+        Map<String, Object> errorBody
+    ) {
+        log.error("TMDBRestClient Error Status Code: {}", statusCode.value());
+        log.error("TMDBRestClient Error Body: {}", errorBody);
     }
 
 }

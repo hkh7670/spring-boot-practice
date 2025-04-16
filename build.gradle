@@ -44,29 +44,32 @@ dependencies {
     // spring-boot-starter-validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // security
+    // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    //JWT
+    // Jwt
     implementation "io.jsonwebtoken:jjwt-api:$JJWT_VERSION"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$JJWT_VERSION"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$JJWT_VERSION"
 
     // commons-lang3
     implementation 'org.apache.commons:commons-lang3:3.17.0'
+
+    // commons-codec
     implementation 'commons-codec:commons-codec:1.18.0'
 
-    // swagger
+    // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
-    // queryDSL
+    // QueryDsl
     implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     // Spring Batch
-    // implementation 'org.springframework.boot:spring-boot-starter-batch'
+//    implementation 'org.springframework.boot:spring-boot-starter-batch'
+//    testImplementation 'org.springframework.batch:spring-batch-test'
 
 }
 

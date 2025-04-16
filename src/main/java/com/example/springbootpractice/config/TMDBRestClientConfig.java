@@ -6,7 +6,13 @@ import com.example.springbootpractice.exception.ErrorCode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +22,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.ResponseSpec;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -41,8 +47,11 @@ public class TMDBRestClientConfig {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final String BASE_URL = "https://api.themoviedb.org/3";
-    private static final int CONNECTION_TIMEOUT = 5 * 1000;
-    private static final int READ_TIMEOUT = 25 * 1000;
+    private static final int CONNECTION_TIMEOUT = 5;
+    private static final int READ_TIMEOUT = 25;
+
+    private static final int MAX_TOTAL_CONNECTIONS = 100;
+    private static final int MAX_PER_ROUTE = 20;
 
     @Bean
     public TMDBRestClient tmdbRestClient() {
@@ -59,6 +68,7 @@ public class TMDBRestClientConfig {
                 httpHeaders.add(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue());
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             })
+//            .requestFactory(getClientHttpRequestFactory())
             .requestFactory(getClientHttpRequestFactory())
             .defaultStatusHandler(HttpStatusCode::is4xxClientError, default4xxErrorHandler())
             .defaultStatusHandler(HttpStatusCode::is5xxServerError, default5xxErrorHandler())
@@ -69,11 +79,33 @@ public class TMDBRestClientConfig {
         return "Bearer " + this.API_READ_ACCESS_TOKEN;
     }
 
+//    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+//        var factory = new SimpleClientHttpRequestFactory();
+//        factory.setConnectTimeout(CONNECTION_TIMEOUT);
+//        factory.setReadTimeout(READ_TIMEOUT);
+//        return factory;
+//    }
+
+
     private ClientHttpRequestFactory getClientHttpRequestFactory() {
-        var factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(CONNECTION_TIMEOUT);
-        factory.setReadTimeout(READ_TIMEOUT);
-        return factory;
+        return new HttpComponentsClientHttpRequestFactory(createApacheHttpClient());
+    }
+
+    private HttpClient createApacheHttpClient() {
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .setResponseTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .build();
+
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
+
+        return HttpClients.custom()
+            .setConnectionManager(connectionManager)
+            .setDefaultRequestConfig(requestConfig)
+            .evictIdleConnections(Timeout.ofSeconds(30))
+            .build();
     }
 
     private ResponseSpec.ErrorHandler default4xxErrorHandler() {

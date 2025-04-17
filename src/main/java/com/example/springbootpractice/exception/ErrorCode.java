@@ -27,6 +27,7 @@ public enum ErrorCode {
     // 500 Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류 입니다. 관리자 에게 문의 하세요."),
     EXTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 서버 오류 입니다. 관리자 에게 문의 하세요."),
+    EXTERNAL_SERVER_TIMEOUT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 서버 연결에 실패했습니다. 관리자 에게 문의 하세요."),
     ;
 
     private final HttpStatus status;

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @RequiredArgsConstructor
+@ToString
 public class ErrorResponse<T> {
 
     private final ErrorCode errorCode;

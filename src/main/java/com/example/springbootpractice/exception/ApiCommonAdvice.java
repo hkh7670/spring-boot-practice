@@ -21,11 +21,11 @@ public class ApiCommonAdvice {
     @ExceptionHandler(ApiErrorException.class)
     public ResponseEntity<ErrorResponse<?>> handleApiErrorException(ApiErrorException e) {
         log.error(e.getMessage(), e);
-        ErrorResponse<?> errorResponse = new ErrorResponse<>(e.getErrorCode());
-        log.error("errorResponse: {}", errorResponse);
         return ResponseEntity
             .status(e.getErrorCode().getStatus())
-            .body(errorResponse);
+            .body(
+                createErrorResponse(e.getErrorCode())
+            );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -35,45 +35,53 @@ public class ApiCommonAdvice {
     ) {
         log.error(e.getMessage(), e);
         List<FieldError> errorFields = e.getBindingResult().getFieldErrors();
-        ErrorResponse<?> errorResponse = new ErrorResponse<>(
+        return createErrorResponse(
             ErrorCode.SCHEMA_VALIDATE_ERROR,
             errorFields.stream()
-                .map(item -> ErrorField.of(
-                    item.getField(),
-                    item.getRejectedValue(),
-                    item.getDefaultMessage()
-                ))
+                .map(item ->
+                    ErrorField.of(
+                        item.getField(),
+                        item.getRejectedValue(),
+                        item.getDefaultMessage()
+                    )
+                )
                 .toList()
         );
-        log.error("errorResponse: {}", errorResponse);
-        return errorResponse;
+    }
+
+    // 외부 서버 Connection Timeout 처리를 위한 Handler
+    @ExceptionHandler(ResourceAccessException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse<?> handleResourceAccessException(ResourceAccessException e) {
+        log.error(e.getMessage(), e);
+        return createErrorResponse(ErrorCode.EXTERNAL_SERVER_TIMEOUT_ERROR);
     }
 
     @ExceptionHandler(RestClientException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse<?> handleRestClientException(RestClientException e) {
         log.error(e.getMessage(), e);
-        ErrorResponse<?> errorResponse = new ErrorResponse<>(ErrorCode.EXTERNAL_SERVER_ERROR);
-        log.error("errorResponse: {}", errorResponse);
-        return errorResponse;
-    }
-
-    @ExceptionHandler(ResourceAccessException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse<?> handleResourceAccessException(ResourceAccessException e) {
-        log.error(e.getMessage(), e);
-        ErrorResponse<?> errorResponse = new ErrorResponse<>(
-            ErrorCode.EXTERNAL_SERVER_TIMEOUT_ERROR
-        );
-        log.error("errorResponse: {}", errorResponse);
-        return errorResponse;
+        return createErrorResponse(ErrorCode.EXTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse<?> handleException(Exception e) {
         log.error(e.getMessage(), e);
-        ErrorResponse<?> errorResponse = new ErrorResponse<>(ErrorCode.INTERNAL_SERVER_ERROR);
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    private ErrorResponse<?> createErrorResponse(ErrorCode errorCode) {
+        ErrorResponse<?> errorResponse = new ErrorResponse<>(errorCode);
+        log.error("errorResponse: {}", errorResponse);
+        return errorResponse;
+    }
+
+    private <T> ErrorResponse<T> createErrorResponse(
+        ErrorCode errorCode,
+        List<ErrorField<T>> errorFields
+    ) {
+        ErrorResponse<T> errorResponse = new ErrorResponse<>(errorCode, errorFields);
         log.error("errorResponse: {}", errorResponse);
         return errorResponse;
     }

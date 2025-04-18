@@ -4,7 +4,7 @@
   - Java 21
   - Spring Boot 3.4.4
   - Spring Security
-  - Gradle 8.6
+  - Gradle 8.13
   - Spring Data JPA
   - QueryDSL
   - H2

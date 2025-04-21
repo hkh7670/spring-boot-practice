@@ -73,7 +73,7 @@ public class ApiCommonAdvice {
 
     private ErrorResponse<?> createErrorResponse(ErrorCode errorCode) {
         ErrorResponse<?> errorResponse = ErrorResponse.from(errorCode);
-        log.error("errorResponse: {}", errorResponse);
+        printErrorLog(errorResponse);
         return errorResponse;
     }
 
@@ -82,7 +82,11 @@ public class ApiCommonAdvice {
         List<ErrorField<T>> errorFields
     ) {
         ErrorResponse<T> errorResponse = ErrorResponse.of(errorCode, errorFields);
-        log.error("errorResponse: {}", errorResponse);
+        printErrorLog(errorResponse);
         return errorResponse;
+    }
+
+    private void printErrorLog(ErrorResponse<?> errorResponse) {
+        log.error("errorResponse: {}", errorResponse);
     }
 }

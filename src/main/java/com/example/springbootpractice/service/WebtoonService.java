@@ -82,7 +82,7 @@ public class WebtoonService {
     public WebtoonResponse getWebtoon(long webtoonSeq) {
         WebtoonEntity webtoon = webtoonRepository.findById(webtoonSeq)
             .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_WEBTOON_INFO));
-        UserEntity user = userRepository.findById(SecurityUtil.getCurrentUserSeq())
+        UserEntity user = userRepository.findByIdForUpdate(SecurityUtil.getCurrentUserSeq())
             .orElseThrow(() -> new ApiErrorException(ErrorCode.NOT_FOUND_USER));
 
         // 웹툰 접근 권한 체크

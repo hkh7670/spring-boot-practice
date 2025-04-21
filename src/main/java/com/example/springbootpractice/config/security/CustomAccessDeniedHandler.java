@@ -8,8 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -17,21 +19,27 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response,
-        AccessDeniedException accessDeniedException) throws IOException {
+    public void handle(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        AccessDeniedException accessDeniedException
+    ) throws IOException {
 
         log.error("접근 권한 없음: {}", accessDeniedException.getMessage());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(),
-            new ErrorResponse(ErrorCode.AUTHORIZATION_FAIL));
+        objectMapper.writeValue(
+            response.getOutputStream(),
+            new ErrorResponse<>(ErrorCode.AUTHORIZATION_FAIL)
+        );
     }
 }

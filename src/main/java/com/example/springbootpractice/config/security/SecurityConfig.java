@@ -1,5 +1,7 @@
 package com.example.springbootpractice.config.security;
 
+import static com.example.springbootpractice.model.enums.Role.ROLE_ADMIN;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +61,7 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(FrameOptionsConfig::disable))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(PERMIT_ALL_URI).permitAll()
-                .requestMatchers(ADMIN_API_URI).hasAuthority("ROLE_ADMIN")
+                .requestMatchers(ADMIN_API_URI).hasAuthority(ROLE_ADMIN.name())
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions
@@ -67,8 +69,10 @@ public class SecurityConfig {
                 .authenticationEntryPoint(this.authenticationEntryPoint) // 401 에러 처리
             )
             // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣음
-            .addFilterBefore(new JwtAuthenticationFilter(this.jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(
+                new JwtAuthenticationFilter(this.jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class
+            );
 
         return http.build();
     }

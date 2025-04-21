@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -24,24 +24,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain chain
     ) throws ServletException, IOException {
         try {
-            // 헤더에서 JWT를 받아옴
+            // 1. 헤더에서 JWT를 받아옴
             String authorizationHeaderValue = jwtTokenProvider.getAuthorizationHeaderValue(request);
             log.info("Authorization header: {}", authorizationHeaderValue);
+
+            // 2. Bearer 토큰인지 체크
             if (jwtTokenProvider.isNotBearerToken(authorizationHeaderValue)) {
-                log.info("Not bearer token");
-                return;
-            }
-            String token = jwtTokenProvider.getToken(authorizationHeaderValue);
-            log.info("Token: {}", token);
-            // 토큰 유효성 검사
-            if (jwtTokenProvider.isNotValidToken(token)) {
-                log.info("Not valid token value");
+                log.error("Not bearer token");
                 return;
             }
 
-            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옴
+            // 3. 토큰의 유효성 검사
+            String token = jwtTokenProvider.getToken(authorizationHeaderValue);
+            log.info("Token: {}", token);
+            if (jwtTokenProvider.isNotValidToken(token)) {
+                log.error("Not valid token value");
+                return;
+            }
+
+            // 4. 토큰이 유효하면 토큰의 이메일 정보 기준으로 유저 정보를 DB에서 조회
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            // SecurityContext에 Authentication 객체를 저장
+
+            // 5. SecurityContext에 Authentication 객체 설정 후 doFilter를 호출하여 다음 단계 진행
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } finally {
             chain.doFilter(request, response);

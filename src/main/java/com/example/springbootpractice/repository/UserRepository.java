@@ -1,11 +1,13 @@
 package com.example.springbootpractice.repository;
 
 import com.example.springbootpractice.model.entity.UserEntity;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -24,7 +26,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("select u from UserEntity u "
         + "where u.adultWebtoonViewCount >=3 "
         + "and u.regDate between :from and :to ")
-    Page<UserEntity> findAdultWebtoonViewers(LocalDateTime from, LocalDateTime to,
-        Pageable pageable);
+    Page<UserEntity> findAdultWebtoonViewers(
+        LocalDateTime from,
+        LocalDateTime to,
+        Pageable pageable
+    );
+
+    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM UserEntity u WHERE u.seq = :seq")
+    Optional<UserEntity> findByIdForUpdate(long seq);
 
 }

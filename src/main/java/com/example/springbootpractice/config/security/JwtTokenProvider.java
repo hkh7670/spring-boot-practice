@@ -2,7 +2,6 @@ package com.example.springbootpractice.config.security;
 
 import com.example.springbootpractice.model.enums.Role;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -85,6 +84,7 @@ public class JwtTokenProvider {
             Claims claims = parseClaims(token);
             return !claims.getExpiration().before(new Date());
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return false;
         }
     }
@@ -100,15 +100,11 @@ public class JwtTokenProvider {
      * @return JWT Claims
      */
     public Claims parseClaims(String token) {
-        try {
-            return Jwts.parser()
-                .verifyWith(this.key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
+        return Jwts.parser()
+            .verifyWith(this.key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     public boolean isBearerToken(String token) {

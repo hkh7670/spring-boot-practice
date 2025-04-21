@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -34,9 +35,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         log.error("인증되지 않은 접근: {}", authException.getMessage());
 
+        String requestId = MDC.get(REQUEST_ID_HEADER);
+        if (StringUtils.hasText(requestId)) {
+            response.setHeader(REQUEST_ID_HEADER, requestId);
+        }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
 
         objectMapper.writeValue(
             response.getOutputStream(),

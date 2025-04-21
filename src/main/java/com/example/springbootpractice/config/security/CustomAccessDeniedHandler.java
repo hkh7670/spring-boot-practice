@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -33,9 +34,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         log.error("접근 권한 없음: {}", accessDeniedException.getMessage());
 
+        String requestId = MDC.get(REQUEST_ID_HEADER);
+        if (StringUtils.hasText(requestId)) {
+            response.setHeader(REQUEST_ID_HEADER, requestId);
+        }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setHeader(REQUEST_ID_HEADER, MDC.get(REQUEST_ID_HEADER));
 
         objectMapper.writeValue(
             response.getOutputStream(),

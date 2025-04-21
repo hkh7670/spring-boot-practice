@@ -54,10 +54,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        return http
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(
-                SessionCreationPolicy.STATELESS))  // 토큰 기반 인증이므로 세션 사용 안함
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // 토큰 기반 인증이므로 세션 사용 안함
             .headers(headers -> headers.frameOptions(FrameOptionsConfig::disable))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(PERMIT_ALL_URI).permitAll()
@@ -72,9 +72,7 @@ public class SecurityConfig {
             .addFilterBefore(
                 new JwtAuthenticationFilter(this.jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
-            );
-
-        return http.build();
+            ).build();
     }
 
 }

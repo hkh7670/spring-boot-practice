@@ -43,7 +43,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         objectMapper.writeValue(
             response.getOutputStream(),
-            new ErrorResponse<>(ErrorCode.AUTHORIZATION_FAIL)
+            ErrorResponse.from(ErrorCode.AUTHORIZATION_FAIL)
         );
     }
 }

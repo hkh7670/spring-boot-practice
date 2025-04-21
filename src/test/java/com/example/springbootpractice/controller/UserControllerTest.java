@@ -61,7 +61,7 @@ class UserControllerTest {
             // then
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(
-                new ErrorResponse<>(ErrorCode.SCHEMA_VALIDATE_ERROR))));
+                ErrorResponse.from(ErrorCode.SCHEMA_VALIDATE_ERROR))));
     }
 
     @Test

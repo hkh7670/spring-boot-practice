@@ -44,7 +44,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         objectMapper.writeValue(
             response.getOutputStream(),
-            new ErrorResponse<>(ErrorCode.AUTHENTICATION_FAIL)
+            ErrorResponse.from(ErrorCode.AUTHENTICATION_FAIL)
         );
     }
 }

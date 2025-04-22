@@ -32,10 +32,10 @@ public class ApiCommonAdvice {
         MethodArgumentNotValidException e
     ) {
         log.error(e.getMessage(), e);
-        List<FieldError> errorFields = e.getBindingResult().getFieldErrors();
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         return createErrorResponse(
             ErrorCode.SCHEMA_VALIDATE_ERROR,
-            errorFields.stream()
+            fieldErrors.stream()
                 .map(item ->
                     ErrorField.of(
                         item.getField(),

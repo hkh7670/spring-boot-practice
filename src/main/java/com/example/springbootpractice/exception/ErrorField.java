@@ -2,6 +2,7 @@ package com.example.springbootpractice.exception;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import org.springframework.validation.FieldError;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record ErrorField<T>(
@@ -10,15 +11,11 @@ public record ErrorField<T>(
     String message    // 에러 메시지
 ) {
 
-    public static <T> ErrorField<T> of(
-        String fieldName,
-        T fieldValue,
-        String message
-    ) {
-        return ErrorField.<T>builder()
-            .fieldName(fieldName)
-            .fieldValue(fieldValue)
-            .message(message)
+    public static ErrorField<Object> from(FieldError fieldError) {
+        return ErrorField.<Object>builder()
+            .fieldName(fieldError.getField())
+            .fieldValue(fieldError.getRejectedValue())
+            .message(fieldError.getDefaultMessage())
             .build();
     }
 

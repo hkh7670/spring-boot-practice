@@ -36,13 +36,7 @@ public class ApiCommonAdvice {
         return createErrorResponse(
             ErrorCode.SCHEMA_VALIDATE_ERROR,
             fieldErrors.stream()
-                .map(item ->
-                    ErrorField.of(
-                        item.getField(),
-                        item.getRejectedValue(),
-                        item.getDefaultMessage()
-                    )
-                )
+                .map(ErrorField::from)
                 .toList()
         );
     }

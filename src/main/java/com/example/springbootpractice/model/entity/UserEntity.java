@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -85,7 +86,7 @@ public class UserEntity extends BaseTimeEntity {
     }
 
     public void increaseAdultWebtoonViewCount() {
-        this.adultWebtoonViewCount++;
+        this.adultWebtoonViewCount = Objects.requireNonNullElse(this.adultWebtoonViewCount, 0L) + 1;
     }
 
     // 웹툰 접근 권한이 있는지 체크

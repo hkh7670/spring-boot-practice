@@ -87,6 +87,9 @@ public class ApiCommonAdvice {
     }
 
     private void printErrorResponse(ErrorResponse<?> errorResponse) {
-        log.error("errorResponse: {}", errorResponse);
+        log.error("{} errorResponse: {}",
+            errorResponse.errorCode().getStatus().value(),
+            errorResponse
+        );
     }
 }

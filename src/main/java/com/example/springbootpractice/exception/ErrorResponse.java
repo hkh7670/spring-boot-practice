@@ -3,43 +3,32 @@ package com.example.springbootpractice.exception;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
-import lombok.Getter;
-import lombok.ToString;
 
-@Getter
-@ToString
-public class ErrorResponse<T> {
+public record ErrorResponse<T>(
+    ErrorCode errorCode,
 
-    private final ErrorCode errorCode;
-    private final String message;
+    String message,
 
     @JsonInclude(Include.NON_EMPTY)
-    private final List<ErrorField<T>> errorFields;
-
-    private ErrorResponse(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-        this.message = errorCode.getMessage();
-        this.errorFields = null;
-    }
-
-    private ErrorResponse(
-        ErrorCode errorCode,
-        List<ErrorField<T>> errorFields
-    ) {
-        this.errorCode = errorCode;
-        this.message = errorCode.getMessage();
-        this.errorFields = errorFields;
-    }
+    List<ErrorField<T>> errorFields
+) {
 
     public static ErrorResponse<?> from(ErrorCode errorCode) {
-        return new ErrorResponse<>(errorCode);
+        return new ErrorResponse<>(
+            errorCode,
+            errorCode.getMessage(),
+            null
+        );
     }
 
     public static <T> ErrorResponse<T> of(
         ErrorCode errorCode,
         List<ErrorField<T>> errorFields
     ) {
-        return new ErrorResponse<>(errorCode, errorFields);
+        return new ErrorResponse<>(
+            errorCode,
+            errorCode.getMessage(),
+            errorFields
+        );
     }
-
 }

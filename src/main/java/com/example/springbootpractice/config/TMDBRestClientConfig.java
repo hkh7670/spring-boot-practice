@@ -10,8 +10,10 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,28 +48,35 @@ public class TMDBRestClientConfig {
     }
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
     private static final String BASE_URL = "https://api.themoviedb.org/3";
+    private static final String REST_CLIENT_BEAN_NAME = "tmdbRestClient";
+
     private static final int CONNECTION_TIMEOUT = 5;
     private static final int READ_TIMEOUT = 25;
-    private static final int MAX_TOTAL_CONNECTIONS = 100;
-    private static final int MAX_PER_ROUTE = 20;
+    private static final int MAX_TOTAL_CONNECTIONS = 100;   // 전체 커넥션 수 최대값
+    private static final int MAX_PER_ROUTE = 20;            // 도메인(호스트) 당 최대 커넥션 수
+    private static final int MAX_RETRY_ATTEMPT_COUNT = 3;   // 최대 재시도 횟수
+    private static final long DEFAULT_RETRY_INTERVAL = 1L;  // 재시도 간격 (초)
+    private static final long MAX_IDLE_TIME = 30L;
 
-    @Bean
-    public TMDBRestClient tmdbRestClient() {
+
+    @Bean(name = REST_CLIENT_BEAN_NAME)
+    public TMDBRestClient createClient() {
         return HttpServiceProxyFactory
-            .builderFor(RestClientAdapter.create(getTMDBRestClient()))
+            .builderFor(RestClientAdapter.create(createRestClient()))
             .build()
             .createClient(TMDBRestClient.class);
     }
 
-    private RestClient getTMDBRestClient() {
+    private RestClient createRestClient() {
         return RestClient.builder()
             .baseUrl(BASE_URL)
             .defaultHeaders(httpHeaders -> {
                 httpHeaders.add(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue());
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             })
-            .requestFactory(getClientHttpRequestFactory())
+            .requestFactory(createClientHttpRequestFactory())
             .defaultStatusHandler(HttpStatusCode::is4xxClientError, default4xxErrorHandler())
             .defaultStatusHandler(HttpStatusCode::is5xxServerError, default5xxErrorHandler())
             .build();
@@ -77,7 +86,7 @@ public class TMDBRestClientConfig {
         return "Bearer " + this.API_READ_ACCESS_TOKEN;
     }
 
-    private ClientHttpRequestFactory getClientHttpRequestFactory() {
+    private ClientHttpRequestFactory createClientHttpRequestFactory() {
         return new HttpComponentsClientHttpRequestFactory(createApacheHttpClient());
     }
 
@@ -88,13 +97,19 @@ public class TMDBRestClientConfig {
             .build();
 
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS); // 전체 커넥션 수 최대값
-        connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE); // 도메인(호스트) 당 최대 커넥션 수
+        connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
+
+        DefaultHttpRequestRetryStrategy retryStrategy = new DefaultHttpRequestRetryStrategy(
+            MAX_RETRY_ATTEMPT_COUNT,
+            TimeValue.ofSeconds(DEFAULT_RETRY_INTERVAL)
+        );
 
         return HttpClients.custom()
             .setConnectionManager(connectionManager)
             .setDefaultRequestConfig(requestConfig)
-            .evictIdleConnections(Timeout.ofSeconds(30)) // 일정 시간 이상 유휴 커넥션 정리 (메모리 누수 방지)
+            .setRetryStrategy(retryStrategy)
+            .evictIdleConnections(Timeout.ofSeconds(MAX_IDLE_TIME)) // 일정 시간 이상 유휴 커넥션 정리 (메모리 누수 방지)
             .build();
     }
 

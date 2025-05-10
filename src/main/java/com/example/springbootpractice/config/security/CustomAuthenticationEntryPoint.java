@@ -1,5 +1,6 @@
 package com.example.springbootpractice.config.security;
 
+import static com.example.springbootpractice.util.CommonConstants.AUTH_ERROR_CODE;
 import static com.example.springbootpractice.util.CommonConstants.REQUEST_ID_HEADER;
 
 import com.example.springbootpractice.exception.ErrorCode;
@@ -44,7 +45,20 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         objectMapper.writeValue(
             response.getOutputStream(),
-            ErrorResponse.from(ErrorCode.AUTHENTICATION_FAIL)
+            ErrorResponse.from(
+                getErrorCodeFromServletRequest(request)
+            )
         );
+    }
+
+    private ErrorCode getErrorCodeFromServletRequest(HttpServletRequest request) {
+        Object errorCode = request.getAttribute(AUTH_ERROR_CODE);
+        if (errorCode instanceof ErrorCode ec) {
+            log.info("ErrorCode: {}", ec);
+            return ec;
+        } else {
+            log.warn("authErrorCode is not an instance of ErrorCode: {}", errorCode);
+            return ErrorCode.AUTHENTICATION_FAIL;
+        }
     }
 }

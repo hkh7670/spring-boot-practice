@@ -45,9 +45,6 @@ public class RequestIdFilter implements Filter {
             MDC.put(REQUEST_ID_HEADER, requestId); // MDC에 저장하여 로그에서 활용
             log.info("[{} {}] 요청 시작", method, uri);
             chain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("[{} {}] 예외 발생: {}", method, uri, e.getMessage());
-            chain.doFilter(request, response);
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             log.info("[{} {}] 요청 완료 ({} ms)", method, uri, duration);

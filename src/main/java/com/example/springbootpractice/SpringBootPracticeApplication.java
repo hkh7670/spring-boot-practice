@@ -23,17 +23,17 @@ public class SpringBootPracticeApplication {
         );
 
         Environment environment = context.getEnvironment();
-        Set<String> importList = getImportList(environment);
-        log.info("===== spring.config.import 값 : {}", importList);
+        Set<String> configImportSet = getConfigImportSet(environment);
+        log.info("===== spring.config.import 값 : {}", configImportSet);
     }
 
-    private static Set<String> getImportList(Environment environment) {
-        Set<String> importList = new HashSet<>();
-        int index = 0;
+    private static Set<String> getConfigImportSet(Environment environment) {
+        Set<String> configImportSet = new HashSet<>();
         String format = "spring.config.import[%d]";
+        int index = 0;
 
         while (true) {
-            String key = String.format(format, index++);
+            String key = format.formatted(index++);
             String[] configFileNameArray = environment.getProperty(key, String[].class);
 
             // import한 config 파일이 더이상 없을 경우 종료
@@ -41,9 +41,9 @@ public class SpringBootPracticeApplication {
                 break;
             }
 
-            importList.add(configFileNameArray[0]);
+            configImportSet.add(configFileNameArray[0]);
         }
-        return importList;
+        return configImportSet;
     }
 
 }

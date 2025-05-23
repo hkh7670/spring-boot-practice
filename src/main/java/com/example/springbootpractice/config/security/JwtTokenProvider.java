@@ -23,19 +23,19 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
     private final SecretKey key;
-    private final long accessTokenExpTime;
     private final UserDetailsService userDetailsService;
+    private final long accessTokenExpTime; // JWT 토큰 유효기간 (밀리 초)
 
     public JwtTokenProvider(
         @Value("${jwt.secret}")
         String secretKey,
         @Value("${jwt.expiration_time}")
-        long accessTokenExpTime,
+        long accessTokenExpTime, // JWT 토큰 유효기간 (시간)
         UserDetailsService userDetailsService
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.accessTokenExpTime = accessTokenExpTime;
+        this.accessTokenExpTime = accessTokenExpTime * 3_600_000; // 시간 -> 밀리초로 변환
         this.userDetailsService = userDetailsService;
     }
 

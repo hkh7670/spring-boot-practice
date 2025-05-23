@@ -44,7 +44,7 @@ springdoc:
   writer-with-default-pretty-printer: true
   model-and-view-allowed: true
 jwt:
-  expiration_time: 86400000 #1일
+  expiration_time: 24 # JWT 토큰 유효 기간 (시간 단위)
   secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
 
 logging:

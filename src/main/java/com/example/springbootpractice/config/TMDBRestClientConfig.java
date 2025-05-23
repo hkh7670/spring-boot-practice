@@ -7,12 +7,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.HttpRequestRetryStrategy;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,14 +75,18 @@ public class TMDBRestClientConfig {
     private RestClient createRestClient() {
         return RestClient.builder()
             .baseUrl(BASE_URL)
-            .defaultHeaders(httpHeaders -> {
-                httpHeaders.add(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue());
-                httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            })
+            .defaultHeaders(createHeadersConsumer())
             .requestFactory(createClientHttpRequestFactory())
             .defaultStatusHandler(HttpStatusCode::is4xxClientError, default4xxErrorHandler())
             .defaultStatusHandler(HttpStatusCode::is5xxServerError, default5xxErrorHandler())
             .build();
+    }
+
+    private Consumer<HttpHeaders> createHeadersConsumer() {
+        return httpHeaders -> {
+            httpHeaders.add(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue());
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        };
     }
 
     private String getAuthorizationHeaderValue() {
@@ -91,26 +98,35 @@ public class TMDBRestClientConfig {
     }
 
     private HttpClient createApacheHttpClient() {
-        RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectionRequestTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
-            .setResponseTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+        return HttpClients.custom()
+            .setConnectionManager(createHttpClientConnectionManager())
+            .setDefaultRequestConfig(createClientRequestConfig())
+            .setRetryStrategy(createRetryStrategy())
+            .evictIdleConnections(
+                Timeout.ofSeconds(MAX_IDLE_TIME) // 일정 시간 이상 유휴 커넥션 정리 (메모리 누수 방지)
+            )
             .build();
+    }
 
+    private HttpClientConnectionManager createHttpClientConnectionManager() {
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
         connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
         connectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
+        return connectionManager;
+    }
 
-        DefaultHttpRequestRetryStrategy retryStrategy = new DefaultHttpRequestRetryStrategy(
+    private RequestConfig createClientRequestConfig() {
+        return RequestConfig.custom()
+            .setConnectionRequestTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+            .setResponseTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .build();
+    }
+
+    private HttpRequestRetryStrategy createRetryStrategy() {
+        return new DefaultHttpRequestRetryStrategy(
             MAX_RETRY_ATTEMPT_COUNT,
             TimeValue.ofSeconds(DEFAULT_RETRY_INTERVAL)
         );
-
-        return HttpClients.custom()
-            .setConnectionManager(connectionManager)
-            .setDefaultRequestConfig(requestConfig)
-            .setRetryStrategy(retryStrategy)
-            .evictIdleConnections(Timeout.ofSeconds(MAX_IDLE_TIME)) // 일정 시간 이상 유휴 커넥션 정리 (메모리 누수 방지)
-            .build();
     }
 
     private ResponseSpec.ErrorHandler default4xxErrorHandler() {

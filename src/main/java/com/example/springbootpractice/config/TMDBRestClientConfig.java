@@ -5,9 +5,13 @@ import com.example.springbootpractice.exception.ApiErrorException;
 import com.example.springbootpractice.exception.ErrorCode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.HttpRequestRetryStrategy;
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -25,7 +29,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
@@ -77,6 +83,7 @@ public class TMDBRestClientConfig {
             .baseUrl(BASE_URL)
             .defaultHeaders(createHeadersConsumer())
             .requestFactory(createClientHttpRequestFactory())
+            .requestInterceptor(loggingInterceptor())
             .defaultStatusHandler(HttpStatusCode::is4xxClientError, default4xxErrorHandler())
             .defaultStatusHandler(HttpStatusCode::is5xxServerError, default5xxErrorHandler())
             .build();
@@ -94,8 +101,36 @@ public class TMDBRestClientConfig {
     }
 
     private ClientHttpRequestFactory createClientHttpRequestFactory() {
-        return new HttpComponentsClientHttpRequestFactory(createApacheHttpClient());
+        // loggingInterceptor 메소드에서 응답 Body를 InputStream 으로 한번 읽게 되면 실제 비즈니스 로직에서 해당 Body를 읽을 수 없다.
+        // 따라서 BufferingClientHttpRequestFactory를 사용하여 응답 Body를 버퍼링하여 여러 번 읽을 수 있도록 한다.
+        return new BufferingClientHttpRequestFactory(
+            new HttpComponentsClientHttpRequestFactory(createApacheHttpClient())
+        );
     }
+
+    private ClientHttpRequestInterceptor loggingInterceptor() {
+        return (request, body, execution) -> {
+            log.info("[TMDB Request] {} {}", request.getMethod(), request.getURI());
+            log.debug("Headers: {}", request.getHeaders());
+            if (body.length > 0) {
+                log.debug("Request Body: {}", new String(body, StandardCharsets.UTF_8));
+            }
+
+            ClientHttpResponse response = execution.execute(request, body);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                return response;
+            }
+
+            log.info("[TMDB Response] Status: {}", response.getStatusCode());
+            String responseBody = new BufferedReader(
+                new InputStreamReader(response.getBody(), StandardCharsets.UTF_8)).lines()
+                .collect(Collectors.joining("\n"));
+            log.info("Response Body: {}", responseBody);
+
+            return response;
+        };
+    }
+
 
     private HttpClient createApacheHttpClient() {
         return HttpClients.custom()
@@ -171,8 +206,8 @@ public class TMDBRestClientConfig {
         HttpStatusCode statusCode,
         Map<String, Object> errorBody
     ) {
-        log.error("TMDBRestClient Error Status Code: {}", statusCode.value());
-        log.error("TMDBRestClient Error Body: {}", errorBody);
+        log.error("[TMDB Response] Error Status Code: {}", statusCode.value());
+        log.error("[TMDB Response] Error Body: {}", errorBody);
     }
 
 }

@@ -32,7 +32,7 @@ public class MovieEntity extends BaseTimeEntity {
     @Comment("영화 제목")
     private String title;
 
-    @Column(name = "overview", nullable = false, length = 500)
+    @Column(name = "overview", nullable = false, length = 2000)
     @Comment("요약")
     private String overview;
 
@@ -53,10 +53,10 @@ public class MovieEntity extends BaseTimeEntity {
     @Column(name = "popularity", nullable = false)
     private Double popularity;
 
-    @Column(name = "poster_path", nullable = false)
+    @Column(name = "poster_path")
     private String posterPath;
 
-    @Column(name = "release_date", nullable = false)
+    @Column(name = "release_date")
     private LocalDate releaseDate;
 
     @Column(name = "video", nullable = false)
@@ -65,7 +65,7 @@ public class MovieEntity extends BaseTimeEntity {
     @Column(name = "adult", nullable = false)
     private Boolean adult;
 
-    @Column(name = "backdrop_path", nullable = false)
+    @Column(name = "backdrop_path")
     private String backdropPath;
 
     @Column(name = "page", nullable = false)

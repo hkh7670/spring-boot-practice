@@ -12,6 +12,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 
@@ -32,11 +33,8 @@ public class RequestIdFilter implements Filter {
         if (hasNotText(requestId)) {
             requestId = CommonUtils.getRequestId();
         }
-        Thread thread = Thread.currentThread();
-        String threadId = thread.isVirtual()
-            ? "virtual-thread-" + thread.threadId()
-            : thread.getName();
-
+        
+        String threadId = "thread-" + UUID.randomUUID();
         String method = httpServletRequest.getMethod();
         String uri = httpServletRequest.getRequestURI();
 

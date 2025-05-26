@@ -25,6 +25,12 @@ spring:
   threads:
     virtual:
       enabled: true
+logging:
+  level:
+    root: info
+    org.springframework: info
+    org.springframework.web: debug
+    org.springframework.jdbc: debug
 
 springdoc:
   swagger-ui:
@@ -46,9 +52,3 @@ springdoc:
 jwt:
   expiration_time: 24 # JWT 토큰 유효 기간 (시간 단위)
   secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
-
-logging:
-  level:
-    org:
-      springframework:
-        jdbc: debug

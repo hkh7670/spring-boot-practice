@@ -3,12 +3,9 @@ package com.example.springbootpractice.config;
 import com.example.springbootpractice.client.TMDBRestClient;
 import com.example.springbootpractice.exception.ApiErrorException;
 import com.example.springbootpractice.exception.ErrorCode;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -55,8 +52,6 @@ public class TMDBRestClientConfig {
         this.API_READ_ACCESS_TOKEN = API_READ_ACCESS_TOKEN;
         this.API_KEY = API_KEY;
     }
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String BASE_URL = "https://api.themoviedb.org/3";
     private static final String REST_CLIENT_BEAN_NAME = "tmdbRestClient";
@@ -115,18 +110,16 @@ public class TMDBRestClientConfig {
             if (body.length > 0) {
                 log.debug("Request Body: {}", new String(body, StandardCharsets.UTF_8));
             }
-
             ClientHttpResponse response = execution.execute(request, body);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                return response;
-            }
-
-            log.info("[TMDB Response] Status: {}", response.getStatusCode());
-            String responseBody = new BufferedReader(
-                new InputStreamReader(response.getBody(), StandardCharsets.UTF_8)).lines()
-                .collect(Collectors.joining("\n"));
-            log.info("Response Body: {}", responseBody);
-
+            String responseBody =
+                new BufferedReader(
+                    new InputStreamReader(
+                        response.getBody(),
+                        StandardCharsets.UTF_8
+                    )
+                ).lines().collect(Collectors.joining("\n"));
+            log.error("[TMDB Response] Status Code: {}", response.getStatusCode().value());
+            log.error("[TMDB Response] Body: {}", responseBody);
             return response;
         };
     }
@@ -166,9 +159,7 @@ public class TMDBRestClientConfig {
 
     private ResponseSpec.ErrorHandler default4xxErrorHandler() {
         return (req, res) -> {
-            Map<String, Object> errorBody = getErrorBody(res);
             HttpStatusCode statusCode = res.getStatusCode();
-            printErrorLog(statusCode, errorBody);
             switch (statusCode) {
                 case HttpStatus.UNAUTHORIZED ->
                     throw new ApiErrorException(ErrorCode.AUTHENTICATION_FAIL);
@@ -180,34 +171,7 @@ public class TMDBRestClientConfig {
 
     private ResponseSpec.ErrorHandler default5xxErrorHandler() {
         return (req, res) -> {
-            Map<String, Object> errorBody = getErrorBody(res);
-            HttpStatusCode statusCode = res.getStatusCode();
-            printErrorLog(statusCode, errorBody);
             throw new ApiErrorException(ErrorCode.EXTERNAL_SERVER_ERROR);
         };
     }
-
-    private Map<String, Object> getErrorBody(ClientHttpResponse res) {
-        Map<String, Object> errorBody;
-        try {
-            errorBody = objectMapper.readValue(
-                res.getBody(),
-                new TypeReference<>() {
-                }
-            );
-        } catch (Exception e) {
-            log.error("Failed to parse TMDBRestClient error response body", e);
-            throw new ApiErrorException(ErrorCode.EXTERNAL_SERVER_ERROR);
-        }
-        return errorBody;
-    }
-
-    private void printErrorLog(
-        HttpStatusCode statusCode,
-        Map<String, Object> errorBody
-    ) {
-        log.error("[TMDB Response] Error Status Code: {}", statusCode.value());
-        log.error("[TMDB Response] Error Body: {}", errorBody);
-    }
-
 }

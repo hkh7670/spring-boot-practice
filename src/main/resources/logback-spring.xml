@@ -11,11 +11,37 @@
   <logger name="org.hibernate.SQL" level="DEBUG"/>
   <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
 
+  <!-- 로그 디렉토리 경로 -->
+  <property name="LOG_PATH" value="logs"/>
+
+  <!-- 로그 파일 이름 -->
+  <property name="LOG_FILE_NAME" value="spring-boot-practice.log"/>
+
+  <!-- 파일 로그 + Rolling 설정 -->
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- 현재 출력 중인 로그 파일 -->
+    <file>${LOG_PATH}/${LOG_FILE_NAME}</file>
+
+    <!-- 인코딩 설정 -->
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+
+    <!-- 롤링 정책 (날짜 기반 + 용량 기반) -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- 백업 파일 경로 및 이름 형식 -->
+      <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+
+      <!-- 하루 내에도 파일이 너무 크면 분할 -->
+      <maxFileSize>10MB</maxFileSize>
+    </rollingPolicy>
+  </appender>
+
   <root level="info">
     <appender-ref ref="STDOUT"/>
+    <appender-ref ref="RollingFile"/>
   </root>
-  <!-- 로그 패턴은 원하는 대로 조정 -->
-<!--  <logger name="org.apache.hc.client5.http" level="DEBUG"/>-->
-<!--  <logger name="org.apache.hc.core5.http" level="DEBUG"/>-->
-<!--  <logger name="org.apache.hc.core5.http.headers" level="DEBUG"/>-->
+
+
 </configuration>
